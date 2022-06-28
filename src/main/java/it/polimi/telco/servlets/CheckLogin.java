@@ -2,7 +2,7 @@ package it.polimi.telco.servlets;
 
 import it.polimi.telco.beans.UserBean;
 import it.polimi.telco.exceptions.CredentialsException;
-import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
