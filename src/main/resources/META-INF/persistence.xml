@@ -5,6 +5,13 @@
              version="2.2">
     <persistence-unit name="default">
         <class>it.polimi.telco.entities.User</class>
+        <class>it.polimi.telco.entities.services.FixedInternetService</class>
+        <class>it.polimi.telco.entities.services.FixedPhoneService</class>
+        <class>it.polimi.telco.entities.services.MobileInternetService</class>
+        <class>it.polimi.telco.entities.services.MobilePhoneService</class>
+        <class>it.polimi.telco.entities.Employee</class>
+        <class>it.polimi.telco.entities.Product</class>
+        <class>it.polimi.telco.entities.ServicePackage</class>
         <properties>
             <property name="eclipselink.jdbc.url"
                       value="jdbc:mysql://localhost:3306/telco"/>

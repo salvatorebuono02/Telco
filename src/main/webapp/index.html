@@ -11,6 +11,19 @@
     Password: <input type="password" name="pwd" required><br>
     <input type="submit" value="login">
     <p th:text=" ${errorMsg}"></p>
+    <div id="roleMenu">
+        <ul>
+            <li>
+                <a href="#">Choose your role</a>
+            <ul>
+            <li>
+                <a href="#">Employee</a>
+                <a href="#">User</a>
+            </li>
+            </ul>
+            </li>
+        </ul>
+    </div>
 </form>
 </body>
 </html>
