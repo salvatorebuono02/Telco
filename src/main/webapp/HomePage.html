@@ -20,6 +20,20 @@
             </tr>
             </tbody>
         </table>
+        <table border="1">
+            <thead>
+            <tr>
+                <th>
+                    These are your available packages
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p:${available}">
+                <td th:text="${p.name}">Package</td>
+            </tr>
+            </tbody>
+        </table>
 
 
 </body>

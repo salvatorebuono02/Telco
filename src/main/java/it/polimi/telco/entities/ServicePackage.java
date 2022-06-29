@@ -11,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "service_package",schema = "telco")
+@NamedQuery(name = "ServicePackage.findAll",query = "select sp from ServicePackage sp")
 public class ServicePackage implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -21,9 +22,10 @@ public class ServicePackage implements Serializable {
     private int monthlyFee;
 
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userId")
     private User user;
+
 
     @ManyToMany
     private List<Product> products;
@@ -40,6 +42,15 @@ public class ServicePackage implements Serializable {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "id")
     private List<MobileInternetService> mobileInternetServices;
 */
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public int getId() {
         return id;
     }
@@ -72,11 +83,5 @@ public class ServicePackage implements Serializable {
         this.monthlyFee = monthlyFee;
     }
 
-    public User getUser() {
-        return user;
-    }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
 }

@@ -22,6 +22,8 @@ public class User implements Serializable {
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "user")
     private List<ServicePackage> servicePackages;
+
+
     public User(){
 
     }
@@ -40,8 +42,8 @@ public class User implements Serializable {
 
     public void addServicePackage(ServicePackage servicePackage){
         getServicePackages().add(servicePackage);
-        servicePackage.setUser(this);
     }
+
     public void setId(int id) {
         this.id = id;
     }

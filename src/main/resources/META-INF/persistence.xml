@@ -9,7 +9,6 @@
         <class>it.polimi.telco.entities.services.FixedPhoneService</class>
         <class>it.polimi.telco.entities.services.MobileInternetService</class>
         <class>it.polimi.telco.entities.services.MobilePhoneService</class>
-        <class>it.polimi.telco.entities.Employee</class>
         <class>it.polimi.telco.entities.Product</class>
         <class>it.polimi.telco.entities.ServicePackage</class>
         <properties>
