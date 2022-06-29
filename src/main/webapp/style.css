@@ -1,0 +1,42 @@
+body{
+    background-color: peachpuff;
+    font-family: "Roboto Light";
+    text-align: center;
+}
+
+.table{
+    margin-left: auto;
+    margin-right: auto;
+    table-layout: fixed;
+    border-collapse: collapse;
+    border: 2px solid black;
+    width: 65%;
+
+}
+h1{
+    font-size: 70px;
+}
+
+input{
+    font-size: 20px;
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 8px;
+}
+
+.login{
+    float: left;
+    text-align: right;
+    margin-left: 40vh;
+    font-size: 30px;
+}
+
+.registration{
+    float: right;
+    text-align: right;
+    margin-right: 40vh;
+    font-size: 30px;
+
+}

@@ -3,38 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <title>HOME PAGE</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>
-                        These are your packages
-                    </th>
-                </tr>
-            </thead>
+    <h1>HOMEPAGE</h1>
+    <td th:text="${user.getUsername()} ?: 'You are not logged in'" />
+
+    <h2>These are your active packages</h2>
+    <table class="table">
             <tbody>
             <tr th:each="p:${user.servicePackages}">
                 <td th:text="${p.name}">Package</td>
+                <td th:text="${p.numOfMonths}">Package</td>
+                <td th:text="${p.monthlyFee}">Package</td>
+                <td th:text="${p.products}">Package</td>
             </tr>
             </tbody>
         </table>
-        <table border="1">
-            <thead>
-            <tr>
-                <th>
-                    These are your available packages
-                </th>
-            </tr>
-            </thead>
+    <h2>These are the available packages</h2>
+    <table class="table">
             <tbody>
-            <tr th:each="p:${available}">
-                <td th:text="${p.name}">Package</td>
-            </tr>
+                    <tr th:each="item : ${available}">
+                        <td th:text="${item.name}">Package</td>
+                        <td th:text="${item.name}">Package</td>
+                        <td th:text="${item.numOfMonths}">Package</td>
+                        <td th:text="${item.monthlyFee}">Package</td>
+                        <td th:text="${item.products}">Package</td>
+                    </tr>
             </tbody>
         </table>
 
+          <!--  <tbody>
+            <tr th:each="p:${user.servicePackagesToBuy}">
+                <input type="button" value="Continue to schedule" class="btn btn-red">/>
+                <td th:text="${p.name}">Package</td>
+
+            </tr>
+            </tbody>-->
+
+
+        </table>
 
 </body>
 </html>
