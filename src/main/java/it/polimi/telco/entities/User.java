@@ -7,18 +7,18 @@ import java.util.List;
 @Entity
 @Table(name = "user",schema = "telco")
 @NamedQuery(name="User.checkCredentials", query = "SELECT u FROM User u where u.username = ?1 and u.password = ?2")
+@NamedQuery(name = "User.checkUsername",query = "select u from User u where u.username=:username")
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private String firstname;
     private String lastname;
     private String username;
     private String password;
-    private String role;
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "user")
     private List<ServicePackage> servicePackages;
@@ -79,14 +79,5 @@ public class User implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
 
 }

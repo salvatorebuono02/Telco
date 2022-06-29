@@ -58,7 +58,7 @@ public class CheckLogin extends HttpServlet {
         try {
             // query db to authenticate for user
             userId = userBean.checkCredentials(usrn, pwd);
-        } catch (CredentialsException | NonUniqueResultException e) {
+        } catch (CredentialsException e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Could not check credentials");
             return;

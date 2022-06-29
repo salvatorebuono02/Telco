@@ -1,5 +1,6 @@
 package it.polimi.telco.beans;
 
+import it.polimi.telco.entities.Employee;
 import it.polimi.telco.entities.User;
 import it.polimi.telco.exceptions.CredentialsException;
 
@@ -8,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import java.sql.SQLException;
 import java.util.List;
 
 @Stateless
@@ -34,5 +36,29 @@ public class UserBean {
             return found.getId();
         }
         throw new NonUniqueResultException("More than one user registered with same credentials");
+    }
+    public Integer checkUsername(String usrn) throws CredentialsException{
+        List<User> userList;
+        try {
+            userList=em.createNamedQuery("User.checkUsername",User.class).setParameter("username",usrn).getResultList();
+        }
+        catch (PersistenceException e){
+            throw new CredentialsException("could not verify username");
+        }
+        if(userList.isEmpty())
+            return null;
+        else {
+            User found= userList.get(0);
+            return found.getId();
+        }
+    }
+
+    public User createUser(String username,String password) throws SQLException {
+        User newUser= new User();
+        newUser.setUsername(username);
+        newUser.setPassword(password);
+        em.persist(newUser);
+        em.flush();
+        return newUser;
     }
 }
