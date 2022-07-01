@@ -6,6 +6,10 @@ import it.polimi.telco.entities.ServicePackage;
 import javax.persistence.*;
 import java.io.Serializable;
 @MappedSuperclass
+
+@Entity
+@NamedQuery(name = "Services.findAll", query = "SELECT s FROM Service s")
+
 public abstract class Service implements Serializable {
 
     private static final long serialVersionUID = 1L;

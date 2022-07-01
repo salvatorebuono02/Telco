@@ -1,5 +1,6 @@
 package it.polimi.telco.servlets;
 
+import it.polimi.telco.beans.EmployeeBean;
 import it.polimi.telco.beans.UserBean;
 import it.polimi.telco.exceptions.CredentialsException;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -24,6 +25,9 @@ public class CheckLogin extends HttpServlet {
     private TemplateEngine templateEngine;
     @EJB
     private UserBean userBean;
+
+    @EJB
+    private EmployeeBean employeeBean;
 
     public CheckLogin() {
         super();
@@ -66,14 +70,26 @@ public class CheckLogin extends HttpServlet {
 
         // If the user exists, add info to the session and go to home page, otherwise
         // show login page with error message
-
         String path;
         if (userId == null) {
-            ServletContext servletContext = getServletContext();
-            final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-            ctx.setVariable("errorMsg", "Incorrect username or password");
-            path = "/index.html";
-            templateEngine.process(path, ctx, response.getWriter());
+            try {
+                userId=employeeBean.checkCredentials(usrn, pwd);
+            } catch (CredentialsException e) {
+                e.printStackTrace();
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Could not check credentials");
+                return;            }
+            if(userId==null){
+                ServletContext servletContext = getServletContext();
+                final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+                ctx.setVariable("errorMsg", "Incorrect username or password");
+                path = "/index.html";
+                templateEngine.process(path, ctx, response.getWriter());
+            } else {
+                request.getSession().setAttribute("userId", userId);
+                path = getServletContext().getContextPath() + "/EmployeeHomePage";
+                response.sendRedirect(path);
+            }
+
         } else {
             request.getSession().setAttribute("userId", userId);
             path = getServletContext().getContextPath() + "/HomePage";

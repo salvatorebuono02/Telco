@@ -1,7 +1,9 @@
 package it.polimi.telco.beans;
 
 import it.polimi.telco.entities.Employee;
+import it.polimi.telco.entities.Product;
 import it.polimi.telco.entities.User;
+import it.polimi.telco.entities.services.Service;
 import it.polimi.telco.exceptions.CredentialsException;
 
 import javax.ejb.Stateless;
@@ -63,4 +65,12 @@ public class EmployeeBean {
         return newEmployee;
     }
 
+
+    public List<Service> findAllServices(){
+            return em.createNamedQuery("Services.findAll", Service.class).getResultList();
+    }
+
+    public List<Product> findAllProducts(){
+        return em.createNamedQuery("Products.findAll", Product.class).getResultList();
+    }
 }

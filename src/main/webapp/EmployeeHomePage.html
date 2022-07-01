@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title> EMPLOYEE HOME PAGE</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>HOMEPAGE</h1>
+<h4 th:text="${employee.getUsername()}">Name </h4>
+<h2>DESIGN YOUR PACKAGE</h2>
+<form action="servicePackage" method="post">
+    Package name: <input type="text" name="package_name" required> <br>
+    <fieldset>
+        <legend> Choose type of service </legend>
+        <input th:each="s:${services}" type="checkbox" name="services" th:value="${s.getId()}">
+    </fieldset>
+
+
+</body>
+</html>
