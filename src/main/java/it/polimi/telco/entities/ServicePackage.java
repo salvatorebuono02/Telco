@@ -18,8 +18,7 @@ public class ServicePackage implements Serializable {
     @GeneratedValue
     private int id;
     private String name;
-    private int numOfMonths;
-    private int monthlyFee;
+
 
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -42,6 +41,17 @@ public class ServicePackage implements Serializable {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "id")
     private List<MobileInternetService> mobileInternetServices;
 */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "validityPeriodId")
+    private ValidityPeriod validityPeriod;
+
+    public ValidityPeriod getValidityPeriod() {
+        return validityPeriod;
+    }
+
+    public void setValidityPeriod(ValidityPeriod validityPeriod) {
+        this.validityPeriod = validityPeriod;
+    }
 
     public User getUser() {
         return user;
@@ -62,26 +72,16 @@ public class ServicePackage implements Serializable {
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
 
-    public int getNumOfMonths() {
-        return numOfMonths;
+    public List<Product> getProducts() {
+        return products;
     }
 
-    public void setNumOfMonths(int numOfMonths) {
-        this.numOfMonths = numOfMonths;
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
-
-    public int getMonthlyFee() {
-        return monthlyFee;
-    }
-
-    public void setMonthlyFee(int monthlyFee) {
-        this.monthlyFee = monthlyFee;
-    }
-
 
 }

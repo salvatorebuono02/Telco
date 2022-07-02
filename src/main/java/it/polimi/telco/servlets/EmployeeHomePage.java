@@ -4,6 +4,7 @@ import it.polimi.telco.beans.EmployeeBean;
 import it.polimi.telco.beans.ServicePackageBean;
 import it.polimi.telco.entities.Employee;
 import it.polimi.telco.entities.Product;
+import it.polimi.telco.entities.ValidityPeriod;
 import it.polimi.telco.entities.services.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -26,8 +27,7 @@ public class EmployeeHomePage extends HttpServlet {
     private TemplateEngine templateEngine;
     @EJB
     private EmployeeBean employeeBean;
-    @EJB
-    private ServicePackageBean servicePackageBean;
+
 
     public EmployeeHomePage() {
         super();
@@ -47,16 +47,24 @@ public class EmployeeHomePage extends HttpServlet {
         Employee employee = null;
         List<Service> services = employeeBean.findAllServices();
         List<Product> products = employeeBean.findAllProducts();
+        List<ValidityPeriod> validityPeriods=employeeBean.findAllValidityPeriods();
         int employeeId = (int) req.getSession().getAttribute("userId");
         employee = employeeBean.findById(employeeId);
         ServletContext servletContext = getServletContext();
         final WebContext webContext = new WebContext(req, resp, servletContext, req.getLocale());
-        if (employee != null)
+        if (employee != null) {
             webContext.setVariable("employee", employee);
             webContext.setVariable("services", services);
             webContext.setVariable("products", products);
+            webContext.setVariable("validityPeriods",validityPeriods);
+        }
         String path = "EmployeeHomePage.html";
         templateEngine.process(path, webContext, resp.getWriter());
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //devo settare l'id service package nella tabella service dopo la creazione di un nuovo service package
     }
 }
 

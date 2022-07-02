@@ -12,12 +12,37 @@
 <h1>HOMEPAGE</h1>
 <h4 th:text="${employee.getUsername()}">Name </h4>
 <h2>DESIGN YOUR PACKAGE</h2>
-<form action="servicePackage" method="post">
-    Package name: <input type="text" name="package_name" required> <br>
-    <fieldset>
-        <legend> Choose type of service </legend>
-        <input th:each="s:${services}" type="checkbox" name="services" th:value="${s.getId()}">
-    </fieldset>
+
+<div>
+    <p>Create Service Package</p>
+    <form action="#" th:action="@{/EmployeeHomePage}" method="get">
+        <fieldset>
+            <p>
+                <label>Choose a service</label>
+                <select name="serviceId" id="serviceId">
+                    <option th:each="s:${services}"
+                            th:text="${s.getTypeofService()}"></option>
+                </select>
+            </p>
+            <p>
+                <label>Choose one or more products</label>
+                <select name="productId" id="productId">
+                    <option th:each="p:${products}"
+                            th:text="${p.name}"></option>
+                </select>
+            </p>
+            <p>
+                <label>Choose one or more validity periods</label>
+                <select name="validityPeriodId" id="validityPeriodId">
+                    <option th:each="v:${validityPeriods}"
+                            th:text="${v.toString()}"></option>
+                </select>
+            </p>
+
+            <input type="submit" name="create service package">
+        </fieldset>
+    </form>
+</div>
 
 
 </body>

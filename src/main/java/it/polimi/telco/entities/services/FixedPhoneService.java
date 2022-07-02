@@ -2,10 +2,12 @@ package it.polimi.telco.entities.services;
 
 
 import javax.persistence.Entity;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "fixedphoneservice",schema = "telco")
+@NamedQuery(name = "FixedPhoneService.findAll",query = "select fps from FixedPhoneService fps")
 public class FixedPhoneService extends Service {
     private int numOfMinutes;
     private int numOfSms;
@@ -42,6 +44,11 @@ public class FixedPhoneService extends Service {
 
     public void setFeeExtraSms(int feeExtraSms) {
         this.feeExtraSms = feeExtraSms;
+    }
+
+    @Override
+    public String getTypeofService() {
+        return "FixedPhoneService:"+numOfMinutes+"minutes "+numOfSms+"sms "+feeExtraMin+ "Euro/extra SMS "+feeExtraMin+"Euro/extra minutes";
     }
 }
 

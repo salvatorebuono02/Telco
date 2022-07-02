@@ -3,7 +3,8 @@ package it.polimi.telco.beans;
 import it.polimi.telco.entities.Employee;
 import it.polimi.telco.entities.Product;
 import it.polimi.telco.entities.User;
-import it.polimi.telco.entities.services.Service;
+import it.polimi.telco.entities.ValidityPeriod;
+import it.polimi.telco.entities.services.*;
 import it.polimi.telco.exceptions.CredentialsException;
 
 import javax.ejb.Stateless;
@@ -12,6 +13,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
@@ -67,10 +69,29 @@ public class EmployeeBean {
 
 
     public List<Service> findAllServices(){
-            return em.createNamedQuery("Services.findAll", Service.class).getResultList();
+            List<Service> serviceList=new ArrayList<Service>();
+            List<FixedPhoneService> fpserviceList=em.createNamedQuery("FixedPhoneService.findAll", FixedPhoneService.class).getResultList();
+            List<MobileInternetService> miserviceList=em.createNamedQuery("MobileInternetService.findAll", MobileInternetService.class).getResultList();
+            List<MobilePhoneService> mobilePhoneServiceList=em.createNamedQuery("MobilePhoneService.findAll", MobilePhoneService.class).getResultList();
+            List<FixedInternetService> fixedInternetServices=em.createNamedQuery("FixedInternetService.findAll", FixedInternetService.class).getResultList();
+
+            for (int i=0;i<fpserviceList.size();i++)
+                serviceList.add(fpserviceList.get(i));
+            for (int i=0;i<miserviceList.size();i++)
+                serviceList.add(miserviceList.get(i));
+            for (int i=0;i<mobilePhoneServiceList.size();i++)
+                serviceList.add(mobilePhoneServiceList.get(i));
+            for (int i=0;i<fixedInternetServices.size();i++)
+                serviceList.add(fixedInternetServices.get(i));
+
+            return serviceList;
     }
 
     public List<Product> findAllProducts(){
         return em.createNamedQuery("Products.findAll", Product.class).getResultList();
+    }
+
+    public List<ValidityPeriod> findAllValidityPeriods(){
+        return em.createNamedQuery("ValidityPeriod.findAll",ValidityPeriod.class).getResultList();
     }
 }

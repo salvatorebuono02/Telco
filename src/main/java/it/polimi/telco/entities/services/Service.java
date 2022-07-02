@@ -6,10 +6,6 @@ import it.polimi.telco.entities.ServicePackage;
 import javax.persistence.*;
 import java.io.Serializable;
 @MappedSuperclass
-
-@Entity
-@NamedQuery(name = "Services.findAll", query = "SELECT s FROM Service s")
-
 public abstract class Service implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -19,7 +15,7 @@ public abstract class Service implements Serializable {
     private ServicePackage servicePackage;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     public int getId() {
@@ -29,6 +25,15 @@ public abstract class Service implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
+
+    public ServicePackage getServicePackage() {
+        return servicePackage;
+    }
+
+    public void setServicePackage(ServicePackage servicePackage) {
+        this.servicePackage = servicePackage;
+    }
+    public abstract String getTypeofService();
 
 }
 
