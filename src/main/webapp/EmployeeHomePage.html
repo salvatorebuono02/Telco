@@ -13,37 +13,22 @@
 <h4 th:text="${employee.getUsername()}">Name </h4>
 <h2>DESIGN YOUR PACKAGE</h2>
 
-<div>
-    <p>Create Service Package</p>
-    <form action="#" th:action="@{/EmployeeHomePage}" method="get">
-        <fieldset>
-            <p>
-                <label>Choose a service</label>
-                <select name="serviceId" id="serviceId">
-                    <option th:each="s:${services}"
-                            th:text="${s.getTypeofService()}"></option>
-                </select>
-            </p>
-            <p>
-                <label>Choose one or more products</label>
-                <select name="productId" id="productId">
-                    <option th:each="p:${products}"
-                            th:text="${p.name}"></option>
-                </select>
-            </p>
-            <p>
-                <label>Choose one or more validity periods</label>
-                <select name="validityPeriodId" id="validityPeriodId">
-                    <option th:each="v:${validityPeriods}"
-                            th:text="${v.toString()}"></option>
-                </select>
-            </p>
-
-            <input type="submit" name="create service package">
-        </fieldset>
-    </form>
-</div>
-
-
+<form action="" method="post">
+    Name: <input type="text" name="name" required> <br>
+    <fieldset>
+        <legend>Choose one or more services</legend>
+        <input type="checkbox" name="services" th:each="s:${services}" th:value="${s.id}" th:text="${s.getTypeofService()}">
+    </fieldset>
+    <fieldset>
+        <legend>Choose one or more products</legend>
+        <input type="checkbox" name="products" th:each="p:${products}"  th:value="${p.id}" th:text="${p.name}">
+    </fieldset>
+    <fieldset>
+        <legend>Choose one or more validityPeriod</legend>
+        <input type="checkbox" name="validityPeriods" th:each="vp:${validityPeriods}" th:value="${vp.id}" th:text="${vp.toString()}">
+    </fieldset>
+    <p style="text-align: center;float: bottom" th:text="${confirmMsg}"></p>
+    <input type="submit" value="Create service package">
+</form>
 </body>
 </html>

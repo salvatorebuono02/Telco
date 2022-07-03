@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/EmployeeHomePage")
@@ -27,7 +29,8 @@ public class EmployeeHomePage extends HttpServlet {
     private TemplateEngine templateEngine;
     @EJB
     private EmployeeBean employeeBean;
-
+    @EJB
+    private ServicePackageBean servicePackageBean;
 
     public EmployeeHomePage() {
         super();
@@ -58,6 +61,7 @@ public class EmployeeHomePage extends HttpServlet {
             webContext.setVariable("products", products);
             webContext.setVariable("validityPeriods",validityPeriods);
         }
+
         String path = "EmployeeHomePage.html";
         templateEngine.process(path, webContext, resp.getWriter());
     }
@@ -65,7 +69,64 @@ public class EmployeeHomePage extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //devo settare l'id service package nella tabella service dopo la creazione di un nuovo service package
+        String nameServPackage=req.getParameter("name");
+        String[] services=req.getParameterValues("services");
+        String[] optionalProducts=req.getParameterValues("optionalProducts");
+        String[] validityPeriods= req.getParameterValues("validityPeriods");
+
+        ArrayList<Service> serviceArrayList=new ArrayList<>();
+        ArrayList<Product> productArrayList=new ArrayList<>();
+        ArrayList<ValidityPeriod> validityPeriodArrayList=new ArrayList<>();
+
+        for(String service:services){
+            Service serviceSelected=employeeBean.findServiceById(Integer.parseInt(service));
+            if (serviceSelected!=null)
+                serviceArrayList.add(serviceSelected);
+        }
+
+        if(optionalProducts!=null){
+            for (String optionalProduct:optionalProducts){
+                Product product=employeeBean.findProductById(Integer.parseInt(optionalProduct));
+                if (product!=null)
+                    productArrayList.add(product);
+            }
+        }
+
+        for (String validityPeriod:validityPeriods){
+            ValidityPeriod validityPeriodSelected= employeeBean.findValidityPeriodById(Integer.parseInt(validityPeriod));
+            if (validityPeriodSelected!=null)
+                validityPeriodArrayList.add(validityPeriodSelected);
+        }
+
+        String path;
+        if(servicePackageBean.findServicePackageByName(nameServPackage)!=null){
+            ServletContext servletContext = getServletContext();
+            final WebContext ctx = new WebContext(req, resp, servletContext, req.getLocale());
+            path = "/EmployeeHomePage.html";
+            ctx.setVariable("confirmMsg", "Name already chosen");
+            templateEngine.process(path, ctx, resp.getWriter());
+
+        }
+        else {
+            try {
+                employeeBean.createServicePackage(nameServPackage,serviceArrayList,productArrayList,validityPeriodArrayList);
+            }
+            catch (SQLException e){
+                e.printStackTrace();
+            }
+            ServletContext servletContext = getServletContext();
+            final WebContext ctx = new WebContext(req, resp, servletContext, req.getLocale());
+            path = "/EmployeeHomePage.html";
+            ctx.setVariable("confirmMsg", "Service package created successfully");
+            templateEngine.process(path, ctx, resp.getWriter());
+        }
+
     }
+
+
+
+
+
 }
 
 

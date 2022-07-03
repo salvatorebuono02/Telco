@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Stateless
 public class ServicePackageBean {
@@ -25,5 +26,14 @@ public class ServicePackageBean {
             }
         }
         return availableServicePackages;
+    }
+
+    public ServicePackage findServicePackageByName(String name){
+        List<ServicePackage> allServicePackages=entityManager.createNamedQuery("ServicePackage.findAll",ServicePackage.class).getResultList();
+        for (int i = 0; i < allServicePackages.size(); i++) {
+            if(Objects.equals(allServicePackages.get(i).getName(), name))
+                return allServicePackages.get(i);
+        }
+        return null;
     }
 }
