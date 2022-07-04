@@ -19,10 +19,13 @@ public class User implements Serializable {
     private String lastname;
     private String username;
     private String password;
+    private Integer insolvent=0;
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "user")
     private List<ServicePackage> servicePackages;
 
+   @OneToMany(mappedBy="creator")
+    private List<Order> orders;
 
     public User(){
 
@@ -78,6 +81,14 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Integer getInsolvent() {
+        return insolvent;
+    }
+
+    public void setInsolvent(Integer insolvent) {
+        this.insolvent = insolvent;
     }
 
 }

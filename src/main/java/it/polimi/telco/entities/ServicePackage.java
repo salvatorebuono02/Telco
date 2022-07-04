@@ -20,7 +20,8 @@ public class ServicePackage implements Serializable {
     private String name;
 
 
-
+    @OneToMany(mappedBy ="service",orphanRemoval = true)
+    private List<Order> orders;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
     private User user;
@@ -84,4 +85,11 @@ public class ServicePackage implements Serializable {
         this.products = products;
     }
 
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
 }

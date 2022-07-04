@@ -2,6 +2,7 @@ package it.polimi.telco.servlets;
 
 import it.polimi.telco.beans.EmployeeBean;
 import it.polimi.telco.beans.ServicePackageBean;
+import it.polimi.telco.entities.Employee;
 import it.polimi.telco.entities.Product;
 import it.polimi.telco.entities.ValidityPeriod;
 import it.polimi.telco.entities.services.Service;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 @WebServlet("/CreateServicePackage")
 public class CreateServicePackage extends HttpServlet {
@@ -45,7 +47,8 @@ public class CreateServicePackage extends HttpServlet {
         String[] services=req.getParameterValues("services");
         String[] optionalProducts=req.getParameterValues("optionalProducts");
         String[] validityPeriods= req.getParameterValues("validityPeriods");
-
+        int employeeId = (int) req.getSession().getAttribute("userId");
+        Employee employee = employeeBean.findById(employeeId);
         ArrayList<Service> serviceArrayList=new ArrayList<>();
         ArrayList<Product> productArrayList=new ArrayList<>();
         ArrayList<ValidityPeriod> validityPeriodArrayList=new ArrayList<>();
@@ -71,16 +74,21 @@ public class CreateServicePackage extends HttpServlet {
         }
         //inoltro i parametri
 
-
         String path;
         ServletContext servletContext;
         if(servicePackageBean.findServicePackageByName(nameServPackage)!=null){
             servletContext = getServletContext();
             final WebContext ctx = new WebContext(req, resp, servletContext, req.getLocale());
             path = "/EmployeeHomePage.html";
+            List<Service> servicesList = employeeBean.findAllServices();
+            List<Product> productsList = employeeBean.findAllProducts();
+            List<ValidityPeriod> validityPeriodsList =employeeBean.findAllValidityPeriods();
             ctx.setVariable("confirmMsg", "Name already chosen");
+            ctx.setVariable("employee",employee );
+            ctx.setVariable("services", servicesList);
+            ctx.setVariable("products", productsList);
+            ctx.setVariable("validityPeriods",validityPeriodsList);
             templateEngine.process(path, ctx, resp.getWriter());
-
         }
         else {
             try {

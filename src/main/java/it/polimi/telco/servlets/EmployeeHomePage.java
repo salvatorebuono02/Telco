@@ -1,7 +1,6 @@
 package it.polimi.telco.servlets;
 
 import it.polimi.telco.beans.EmployeeBean;
-import it.polimi.telco.beans.ServicePackageBean;
 import it.polimi.telco.entities.Employee;
 import it.polimi.telco.entities.Product;
 import it.polimi.telco.entities.ValidityPeriod;
@@ -18,10 +17,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/EmployeeHomePage")
@@ -62,7 +58,7 @@ public class EmployeeHomePage extends HttpServlet {
             webContext.setVariable("products", products);
             System.out.println("product ok");
             webContext.setVariable("validityPeriods",validityPeriods);
-            System.out.println("validityperiods ok");
+            System.out.println("validityPeriods ok");
         }
 
         String path = "EmployeeHomePage.html";
