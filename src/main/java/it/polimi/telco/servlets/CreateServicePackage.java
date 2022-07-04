@@ -2,7 +2,6 @@ package it.polimi.telco.servlets;
 
 import it.polimi.telco.beans.EmployeeBean;
 import it.polimi.telco.beans.ServicePackageBean;
-import it.polimi.telco.entities.Employee;
 import it.polimi.telco.entities.Product;
 import it.polimi.telco.entities.ValidityPeriod;
 import it.polimi.telco.entities.services.Service;
@@ -18,22 +17,19 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
-@WebServlet("/EmployeeHomePage")
-public class EmployeeHomePage extends HttpServlet {
+@WebServlet("/CreateServicePackage")
+public class CreateServicePackage extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private TemplateEngine templateEngine;
     @EJB
     private EmployeeBean employeeBean;
-    public EmployeeHomePage() {
-        super();
-    }
-    @Override
+    @EJB
+    private ServicePackageBean servicePackageBean;
+
     public void init() throws ServletException {
         ServletContext servletContext = getServletContext();
         ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
@@ -44,35 +40,7 @@ public class EmployeeHomePage extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Employee employee = null;
-        List<Service> services = employeeBean.findAllServices();
-        List<Product> products = employeeBean.findAllProducts();
-        List<ValidityPeriod> validityPeriods=employeeBean.findAllValidityPeriods();
-        int employeeId = (int) req.getSession().getAttribute("userId");
-        System.out.println(employeeId);
-        employee = employeeBean.findById(employeeId);
-        ServletContext servletContext = getServletContext();
-        final WebContext webContext = new WebContext(req, resp, servletContext, req.getLocale());
-        if (employee != null) {
-            webContext.setVariable("employee", employee);
-            System.out.println("employee ok");
-            webContext.setVariable("services", services);
-            System.out.println("services ok");
-            webContext.setVariable("products", products);
-            System.out.println("product ok");
-            webContext.setVariable("validityPeriods",validityPeriods);
-            System.out.println("validityperiods ok");
-        }
-
-        String path = "EmployeeHomePage.html";
-        templateEngine.process(path, webContext, resp.getWriter());
-    }
-/*
-    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-        //devo settare l'id service package nella tabella service dopo la creazione di un nuovo service package
         String nameServPackage=req.getParameter("name");
         String[] services=req.getParameterValues("services");
         String[] optionalProducts=req.getParameterValues("optionalProducts");
@@ -101,6 +69,8 @@ public class EmployeeHomePage extends HttpServlet {
             if (validityPeriodSelected!=null)
                 validityPeriodArrayList.add(validityPeriodSelected);
         }
+        //inoltro i parametri
+
 
         String path;
         ServletContext servletContext;
@@ -119,26 +89,8 @@ public class EmployeeHomePage extends HttpServlet {
             catch (SQLException e){
                 e.printStackTrace();
             }
-            servletContext = getServletContext();
-            final WebContext ctx = new WebContext(req, resp, servletContext, req.getLocale());
-            path = "/EmployeeHomePage.html";
-            ctx.setVariable("confirmMsg", "Service package created successfully");
-            templateEngine.process(path, ctx, resp.getWriter());
+            path=getServletContext().getContextPath()+"/EmployeeHomePage";
             resp.sendRedirect(path);
         }
-
     }
-*/
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGet(req,resp);
-    }
-
-    public void destroy() {
-    }
-
 }
-
-
-

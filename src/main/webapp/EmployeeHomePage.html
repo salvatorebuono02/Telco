@@ -13,7 +13,7 @@
 <h4 th:text="${employee.getUsername()}">Name </h4>
 <h2>DESIGN YOUR PACKAGE</h2>
 
-<form action="" method="post">
+<form action="#" th:action="@{/CreateServicePackage}" method="post">
     Name: <input type="text" name="name" required> <br>
     <fieldset>
         <legend>Choose one or more services</legend>
