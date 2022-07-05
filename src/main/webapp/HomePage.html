@@ -9,7 +9,7 @@
 <body>
 
     <h1>HOMEPAGE</h1>
-    <td th:text="${user.getUsername()} ?: 'You are not logged in'" />
+    <td th:text="${user!=null} ? ${user.username}: 'You are not logged in'" />
 
     <h2>These are your active packages</h2>
     <table class="table">
@@ -34,6 +34,6 @@
                     </tr>
             </tbody>
         </table>
-
+    <form
 </body>
 </html>

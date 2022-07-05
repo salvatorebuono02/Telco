@@ -46,23 +46,36 @@ public class HomePage extends HttpServlet {
         User user=null;
         List<ServicePackage> activeServicePackages=null;
         List<ServicePackage> availableServicePackages=null;
-        int userId=(int) req.getSession().getAttribute("userId");
-        user = userBean.findById(userId);
-        ServletContext servletContext=getServletContext();
-        final WebContext webContext=new WebContext(req,resp,servletContext,req.getLocale());
-        if(user!=null)
-            webContext.setVariable("user",user);
-        //activeServicePackages
-        activeServicePackages=servicePackageBean.findActive(user);
-        //availableServicePackages
-        availableServicePackages=servicePackageBean.findAvailable(user);
-        if (!activeServicePackages.isEmpty() && activeServicePackages!=null)
-            webContext.setVariable("active",activeServicePackages);
-        if (!availableServicePackages.isEmpty() && availableServicePackages!=null)
-            webContext.setVariable("available",availableServicePackages);
+        if (req.getSession().getAttribute("userId")!=null){
+            int userId=(int) req.getSession().getAttribute("userId");
+            user = userBean.findById(userId);
+            ServletContext servletContext=getServletContext();
+            final WebContext webContext=new WebContext(req,resp,servletContext,req.getLocale());
+            if(user!=null)
+                webContext.setVariable("user",user);
+            //activeServicePackages
+            activeServicePackages=servicePackageBean.findActive(user);
+            //availableServicePackages
+            availableServicePackages=servicePackageBean.findAvailable(user);
+            if (!activeServicePackages.isEmpty() && activeServicePackages!=null)
+                webContext.setVariable("active",activeServicePackages);
+            if (!availableServicePackages.isEmpty() && availableServicePackages!=null)
+                webContext.setVariable("available",availableServicePackages);
 
-        String path="HomePage.html";
-        templateEngine.process(path,webContext,resp.getWriter());
+            String path="HomePage.html";
+            templateEngine.process(path,webContext,resp.getWriter());
+        }
+        else {
+            ServletContext servletContext=getServletContext();
+            final WebContext webContext=new WebContext(req,resp,servletContext,req.getLocale());
+            //availableServicePackages
+            availableServicePackages=servicePackageBean.findAvailable(user);
+            if (!availableServicePackages.isEmpty() && availableServicePackages!=null)
+                webContext.setVariable("available",availableServicePackages);
+            String path="HomePage.html";
+            templateEngine.process(path,webContext,resp.getWriter());
+        }
+
     }
 }
 

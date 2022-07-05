@@ -1,6 +1,7 @@
 package it.polimi.telco.servlets;
 
 import it.polimi.telco.beans.EmployeeBean;
+import it.polimi.telco.beans.OrderBean;
 import it.polimi.telco.beans.UserBean;
 import it.polimi.telco.exceptions.CredentialsException;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -28,6 +29,8 @@ public class CheckLogin extends HttpServlet {
 
     @EJB
     private EmployeeBean employeeBean;
+    @EJB
+    private OrderBean orderBean;
 
     public CheckLogin() {
         super();
@@ -92,9 +95,15 @@ public class CheckLogin extends HttpServlet {
 
         } else {
             request.getSession().setAttribute("userId", userId);
-            path = getServletContext().getContextPath() + "/HomePage";
+            if (orderBean.isOrderInStandBy())
+                path=getServletContext().getContextPath() + "/ConfirmationPage";
+            else{
+                orderBean.setOrderInStandBy(false);
+                path = getServletContext().getContextPath() + "/HomePage";
+            }
             response.sendRedirect(path);
         }
+
 
     }
 

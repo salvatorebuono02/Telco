@@ -14,9 +14,19 @@
             <td th:text="${item.getTypeofService()}">Package</td>
             <td th:text="'Months: ' + ${servicePackage.get().getValidityPeriod().getNumOfMonths()}">Package</td>
             <td th:text="'Price: ' + ${servicePackage.get().getValidityPeriod().getMonthly_fee()}">Package</td>
-            <!--                <td th:text="${p.getProducts()}">Package</td>-->
+
         </tr>
         </tbody>
     </table>
+
+    INSERIRE DATA DI SOTTOSCRIZIONE E DATA INIZIO E SETTA VALIDITY PERIOD
+    <fieldset>
+        <legend>Choose one validityPeriod</legend>
+        <input type="checkbox" name="validityPeriods" th:each="vp:${servicePackage.get().getValidityPeriod()}" th:value="${vp.id}" th:text="${vp.toString()}">
+    </fieldset>
+    <form class="buy" action="Confirmation" method="post">
+        <input type="submit" value="Buy">
+    </form>
+
 </body>
 </html>

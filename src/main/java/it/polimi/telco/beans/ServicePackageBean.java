@@ -36,9 +36,13 @@ public class ServicePackageBean {
         List<ServicePackage> allServicePackages=entityManager.createNamedQuery("ServicePackage.findAll",ServicePackage.class).getResultList();
         List<ServicePackage> availableServicePackages=new ArrayList<>();
         for(int i=0;i< allServicePackages.size();i++){
-            if(allServicePackages.get(i).getUser()==null || allServicePackages.get(i).getUser().getId()!=user.getId()){
-                availableServicePackages.add(allServicePackages.get(i));
+            if(user!=null) {
+                if (allServicePackages.get(i).getUser() == null || allServicePackages.get(i).getUser().getId() != user.getId()) {
+                    availableServicePackages.add(allServicePackages.get(i));
+                }
             }
+            else
+                availableServicePackages.add(allServicePackages.get(i));
         }
         return availableServicePackages;
     }
@@ -57,7 +61,7 @@ public class ServicePackageBean {
     }
 
     private List<Service> findAllServices () {
-        List<Service> serviceList = new ArrayList<Service>();
+        List<Service> serviceList = new ArrayList<>();
         List<FixedPhoneService> fpserviceList = entityManager.createNamedQuery("FixedPhoneService.findAll", FixedPhoneService.class).getResultList();
         List<MobileInternetService> miserviceList = entityManager.createNamedQuery("MobileInternetService.findAll", MobileInternetService.class).getResultList();
         List<MobilePhoneService> mobilePhoneServiceList = entityManager.createNamedQuery("MobilePhoneService.findAll", MobilePhoneService.class).getResultList();

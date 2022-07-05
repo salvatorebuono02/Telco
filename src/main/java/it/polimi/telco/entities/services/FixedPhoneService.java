@@ -50,5 +50,8 @@ public class FixedPhoneService extends Service {
     public String getTypeofService() {
         return "FixedPhoneService:"+numOfMinutes+"minutes "+numOfSms+"sms "+feeExtraMin+ "Euro/extra SMS "+feeExtraMin+"Euro/extra minutes";
     }
+    public String getName(){
+        return "FixedPhoneService";
+    }
 }
 
