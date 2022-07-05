@@ -12,6 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "service_package",schema = "telco")
 @NamedQuery(name = "ServicePackage.findAll",query = "select sp from ServicePackage sp")
+@NamedQuery(name="ServicePackage.findId", query= "select sp from ServicePackage sp where sp.id =:id")
 public class ServicePackage implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -27,7 +28,7 @@ public class ServicePackage implements Serializable {
     private User user;
 
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Product> products;
 /*
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "id")

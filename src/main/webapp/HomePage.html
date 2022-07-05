@@ -14,34 +14,26 @@
     <h2>These are your active packages</h2>
     <table class="table">
             <tbody>
-            <tr th:each="p:${user.servicePackages}">
-                <td th:text="${p.name}">Package</td>
-                <td th:text="${p.numOfMonths}">Package</td>
-                <td th:text="${p.monthlyFee}">Package</td>
-                <td th:text="${p.products}">Package</td>
+            <tr th:each="item:${active}">
+                <td th:text="${item.name}" action="serviceView">Package</td>
+                <td th:text="${item.getValidityPeriod().getNumOfMonths()}">Package</td>
+                <td th:text="${item.getValidityPeriod().getMonthly_fee()}">Package</td>
+<!--                <td th:text="${p.getProducts()}">Package</td>-->
             </tr>
             </tbody>
         </table>
     <h2>These are the available packages</h2>
     <table class="table">
             <tbody>
-                    <tr th:each="item : ${available}">
-                        <td th:text="${item.name}">Package</td>
-                        <td th:text="${item.name}">Package</td>
-                        <td th:text="${item.numOfMonths}">Package</td>
-                        <td th:text="${item.monthlyFee}">Package</td>
-                        <td th:text="${item.products}">Package</td>
+                    <tr th:each="pack:${available}">
+                        <td><a th:href="@{/ShowServicePackage(servicePackageId=${pack.getId()})}"> <span
+                                th:text="${pack.name}"></span></a></td>
+                        <td th:text="${pack.getValidityPeriod().getNumOfMonths()}">Package</td>
+                        <td th:text="${pack.getValidityPeriod().getMonthly_fee()}">Package</td>
+<!--                        <td th:text="${item.getProducts()}">Package</td>-->
                     </tr>
             </tbody>
         </table>
-
-          <!--  <tbody>
-            <tr th:each="p:${user.servicePackagesToBuy}">
-                <input type="button" value="Continue to schedule" class="btn btn-red">/>
-                <td th:text="${p.name}">Package</td>
-
-            </tr>
-            </tbody>-->
 
 </body>
 </html>

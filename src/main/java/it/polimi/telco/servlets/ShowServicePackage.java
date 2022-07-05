@@ -1,9 +1,8 @@
 package it.polimi.telco.servlets;
 
 import it.polimi.telco.beans.ServicePackageBean;
-import it.polimi.telco.beans.UserBean;
 import it.polimi.telco.entities.ServicePackage;
-import it.polimi.telco.entities.User;
+import it.polimi.telco.entities.services.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -18,19 +17,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
-@WebServlet("/HomePage")
-public class HomePage extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+@WebServlet("/ShowServicePackage")
+public class ShowServicePackage extends HttpServlet {
+
     private TemplateEngine templateEngine;
-    @EJB
-    private UserBean userBean;
+
     @EJB
     private ServicePackageBean servicePackageBean;
-
-    public HomePage(){
-        super();
-    }
 
     public void init() throws ServletException {
         ServletContext servletContext = getServletContext();
@@ -40,29 +35,19 @@ public class HomePage extends HttpServlet {
         this.templateEngine.setTemplateResolver(templateResolver);
         templateResolver.setSuffix(".html");
     }
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        User user=null;
-        List<ServicePackage> activeServicePackages=null;
-        List<ServicePackage> availableServicePackages=null;
-        int userId=(int) req.getSession().getAttribute("userId");
-        user = userBean.findById(userId);
         ServletContext servletContext=getServletContext();
         final WebContext webContext=new WebContext(req,resp,servletContext,req.getLocale());
-        if(user!=null)
-            webContext.setVariable("user",user);
-        //activeServicePackages
-        activeServicePackages=servicePackageBean.findActive(user);
-        //availableServicePackages
-        availableServicePackages=servicePackageBean.findAvailable(user);
-        if (!activeServicePackages.isEmpty() && activeServicePackages!=null)
-            webContext.setVariable("active",activeServicePackages);
-        if (!availableServicePackages.isEmpty() && availableServicePackages!=null)
-            webContext.setVariable("available",availableServicePackages);
+        int servicePackageId = Integer.parseInt(req.getParameter("servicePackageId"));
+        Optional<ServicePackage> sp= servicePackageBean.findServicePackageById(servicePackageId);
+        if (sp.isPresent()){
+            List<Service> services = servicePackageBean.findServicesFromServicePackageId(servicePackageId);
+            webContext.setVariable("services",services);
+            webContext.setVariable("servicePackage",sp);
+            String path="ShowServicePackage.html";
+            templateEngine.process(path,webContext,resp.getWriter());}
+        else throw new ServletException();
 
-        String path="HomePage.html";
-        templateEngine.process(path,webContext,resp.getWriter());
     }
 }
-

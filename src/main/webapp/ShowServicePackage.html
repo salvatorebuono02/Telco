@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>VIEW PACKAGE</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <p th:text="${servicePackage.get().name}"></p>
+
+    <table class="table">
+        <tbody>
+        <tr th:each="item:${services}">
+            <td th:text="${item.getTypeofService()}">Package</td>
+            <td th:text="'Months: ' + ${servicePackage.get().getValidityPeriod().getNumOfMonths()}">Package</td>
+            <td th:text="'Price: ' + ${servicePackage.get().getValidityPeriod().getMonthly_fee()}">Package</td>
+            <!--                <td th:text="${p.getProducts()}">Package</td>-->
+        </tr>
+        </tbody>
+    </table>
+</body>
+</html>
