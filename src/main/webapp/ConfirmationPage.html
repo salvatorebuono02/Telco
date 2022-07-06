@@ -9,12 +9,13 @@
 <h1> THIS IS YOUR ORDER:  </h1>
 <table class="table">
     <tbody>
-    <tr>
-        <td>
-            <p th:each="item:${services}" th:text="${item.getTypeofService()}"></p>
-        </td>
+    <tr th:each="item:${services}">
+            <td th:text="${item.getTypeofService()}"> Pacakge</td>
     </tr>
     </tbody>
 </table>
+
+<p th:text="${orderStatus}"></p>
+
 </body>
 </html>

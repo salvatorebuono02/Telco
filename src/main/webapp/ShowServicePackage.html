@@ -24,13 +24,12 @@
         <input type="checkbox" name="optionalProducts" th:each="op:${servicePackage.get().getProducts()}" th:value="${op.id}" th:text="${op.name}">
         <br>
         <label>Choose one validityPeriod:</label>
-        <input type="checkbox" name="validityPeriod" th:value="${servicePackage.get().getValidityPeriod().id}" th:text="${servicePackage.get().getValidityPeriod().toString()}">
+        <input type="checkbox" name="validityPeriod" th:value="${servicePackage.get().getValidityPeriod().id}" th:text="${servicePackage.get().getValidityPeriod().toString()}" required>
         <br>
         <label for="start">Choose start date:</label><input type="date" id="start" name="validityStart">
     </fieldset>
-    <p name="creation" th:value="${date}" th:text="'Date of order creation ' + ${date}">DateCreation</p>
-<!--    to have orderId in page-->
-    <button type="submit"  name="servicePackageId" th:value="${servicePackage.get().getId()}"></button>
+    <br>
+    <button type="submit"  name="servicePackageId" th:value="${servicePackage.get().getId()}" > BUY </button>
     </form>
 
 </body>

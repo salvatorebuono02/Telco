@@ -17,7 +17,7 @@ public class Order implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private LocalDateTime date_of_creation;
+    private Date date_of_creation;
     private LocalDate date_of_subscription;
 
     private boolean confirmed;
@@ -57,11 +57,11 @@ public class Order implements Serializable {
         this.confirmed = confirmed;
     }
 
-    public LocalDateTime getDate_of_creation() {
+    public Date getDate_of_creation() {
         return date_of_creation;
     }
 
-    public void setDate_of_creation(LocalDateTime date_of_creation) {
+    public void setDate_of_creation(Date date_of_creation) {
         this.date_of_creation = date_of_creation;
     }
 
