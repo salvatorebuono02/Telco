@@ -16,6 +16,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,8 +48,13 @@ public class ShowServicePackage extends HttpServlet {
         Optional<ServicePackage> sp= servicePackageBean.findServicePackageById(servicePackageId);
         if (sp.isPresent()){
             List<Service> services = servicePackageBean.findServicesFromServicePackageId(servicePackageId);
+            String pattern = "MM/dd/yyyy HH:mm:ss";
+            DateFormat df = new SimpleDateFormat(pattern);
+            Date today = Calendar.getInstance().getTime();
+            String date = df.format(today);
             webContext.setVariable("services",services);
             webContext.setVariable("servicePackage",sp);
+            webContext.setVariable("date",date);
             String path="ShowServicePackage.html";
             templateEngine.process(path,webContext,resp.getWriter());}
         else throw new ServletException();

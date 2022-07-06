@@ -119,23 +119,6 @@ public class EmployeeBean {
         return null;
     }
 
-    public Product findProductById(int productId) {
-        List<Product> productArrayList =em.createNamedQuery("Products.findAll", Product.class).getResultList();
-        for (int i = 0; i < productArrayList.size(); i++) {
-            if (productArrayList.get(i).getId() == productId)
-                return productArrayList.get(i);
-        }
-        return null;
-    }
-
-    public ValidityPeriod findValidityPeriodById(int vpId) {
-        List<ValidityPeriod> validityPeriodArrayList = em.createNamedQuery("ValidityPeriod.findAll", ValidityPeriod.class).getResultList();
-        for (int i = 0; i < validityPeriodArrayList.size(); i++) {
-            if (validityPeriodArrayList.get(i).getId() == vpId)
-                return validityPeriodArrayList.get(i);
-        }
-        return null;
-    }
 
     public void createServicePackage(String name,ArrayList<Service> services,ArrayList<Product> products,ArrayList<ValidityPeriod> validityPeriods) throws SQLException{
         for(int i=0;i< validityPeriods.size();i++){

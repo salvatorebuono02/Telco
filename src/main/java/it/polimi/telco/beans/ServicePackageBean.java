@@ -1,7 +1,9 @@
 package it.polimi.telco.beans;
 
+import it.polimi.telco.entities.Product;
 import it.polimi.telco.entities.ServicePackage;
 import it.polimi.telco.entities.User;
+import it.polimi.telco.entities.ValidityPeriod;
 import it.polimi.telco.entities.services.*;
 
 import javax.ejb.Stateless;
@@ -84,4 +86,23 @@ public class ServicePackageBean {
         }
         return servicesPackage;
     }
+
+    public ValidityPeriod findValidityPeriodById(int vpId) {
+        List<ValidityPeriod> validityPeriodArrayList = entityManager.createNamedQuery("ValidityPeriod.findAll", ValidityPeriod.class).getResultList();
+        for (int i = 0; i < validityPeriodArrayList.size(); i++) {
+            if (validityPeriodArrayList.get(i).getId() == vpId)
+                return validityPeriodArrayList.get(i);
+        }
+        return null;
+    }
+
+    public Product findProductById(int productId) {
+        List<Product> productArrayList =entityManager.createNamedQuery("Products.findAll", Product.class).getResultList();
+        for (int i = 0; i < productArrayList.size(); i++) {
+            if (productArrayList.get(i).getId() == productId)
+                return productArrayList.get(i);
+        }
+        return null;
+    }
+
 }

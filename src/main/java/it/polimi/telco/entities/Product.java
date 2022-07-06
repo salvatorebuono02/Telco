@@ -30,6 +30,13 @@ public class Product implements Serializable {
     @ManyToMany(mappedBy = "products")
     private List<ServicePackage> servicePackages;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "orderId")
+    private Order order;
+    public String toString() {
+        return monthly_fee +"Euro/month";
+    }
+
     public List<ServicePackage> getServicePackages() {
         return servicePackages;
     }

@@ -7,25 +7,30 @@
 </head>
 <body>
     <p th:text="${servicePackage.get().name}"></p>
-
+    <form class="buy" action="ConfirmationPage" method="post" >
     <table class="table">
         <tbody>
         <tr th:each="item:${services}">
             <td th:text="${item.getTypeofService()}">Package</td>
             <td th:text="'Months: ' + ${servicePackage.get().getValidityPeriod().getNumOfMonths()}">Package</td>
             <td th:text="'Price: ' + ${servicePackage.get().getValidityPeriod().getMonthly_fee()}">Package</td>
-
+            <!--                <td th:text="${p.getProducts()}">Package</td>-->
         </tr>
         </tbody>
     </table>
-
-    INSERIRE DATA DI SOTTOSCRIZIONE E DATA INIZIO E SETTA VALIDITY PERIOD
     <fieldset>
-        <legend>Choose one validityPeriod</legend>
-        <input type="checkbox" name="validityPeriods" th:each="vp:${servicePackage.get().getValidityPeriod()}" th:value="${vp.id}" th:text="${vp.toString()}">
+        <legend>Options</legend>
+        <label>Choose if you want any optional product:</label>
+        <input type="checkbox" name="optionalProducts" th:each="op:${servicePackage.get().getProducts()}" th:value="${op.id}" th:text="${op.name}">
+        <br>
+        <label>Choose one validityPeriod:</label>
+        <input type="checkbox" name="validityPeriod" th:value="${servicePackage.get().getValidityPeriod().id}" th:text="${servicePackage.get().getValidityPeriod().toString()}">
+        <br>
+        <label for="start">Choose start date:</label><input type="date" id="start" name="validityStart">
     </fieldset>
-    <form class="buy" action="Confirmation" method="post">
-        <input type="submit" value="Buy">
+    <p name="creation" th:value="${date}" th:text="'Date of order creation ' + ${date}">DateCreation</p>
+<!--    to have orderId in page-->
+    <button type="submit"  name="servicePackageId" th:value="${servicePackage.get().getId()}"></button>
     </form>
 
 </body>

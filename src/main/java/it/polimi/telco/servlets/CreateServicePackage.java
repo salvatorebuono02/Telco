@@ -61,14 +61,14 @@ public class CreateServicePackage extends HttpServlet {
 
         if(optionalProducts!=null){
             for (String optionalProduct:optionalProducts){
-                Product product=employeeBean.findProductById(Integer.parseInt(optionalProduct));
+                Product product=servicePackageBean.findProductById(Integer.parseInt(optionalProduct));
                 if (product!=null)
                     productArrayList.add(product);
             }
         }
 
         for (String validityPeriod:validityPeriods){
-            ValidityPeriod validityPeriodSelected= employeeBean.findValidityPeriodById(Integer.parseInt(validityPeriod));
+            ValidityPeriod validityPeriodSelected= servicePackageBean.findValidityPeriodById(Integer.parseInt(validityPeriod));
             if (validityPeriodSelected!=null)
                 validityPeriodArrayList.add(validityPeriodSelected);
         }

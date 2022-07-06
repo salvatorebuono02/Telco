@@ -94,11 +94,15 @@ public class CheckLogin extends HttpServlet {
             }
 
         } else {
+            //TODO si può usare sessione, mettendo order in session e usando di nuovo true e false nel orderStandby
             request.getSession().setAttribute("userId", userId);
-            if (orderBean.isOrderInStandBy())
-                path=getServletContext().getContextPath() + "/ConfirmationPage";
+            ServletContext servletContext = getServletContext();
+            final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+            if (orderBean.getOrderInStandBy()!=-1) {
+                path = getServletContext().getContextPath() + "/ConfirmationPage";
+            }
             else{
-                orderBean.setOrderInStandBy(false);
+                orderBean.setOrderInStandBy(-1);
                 path = getServletContext().getContextPath() + "/HomePage";
             }
             response.sendRedirect(path);

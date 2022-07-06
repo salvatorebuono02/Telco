@@ -18,6 +18,8 @@ public class ValidityPeriod implements Serializable {
     @OneToMany(mappedBy = "validityPeriod",fetch = FetchType.LAZY,orphanRemoval = true)
     private List<ServicePackage> servicePackages;
 
+    @OneToOne(mappedBy="validityPeriod")
+    private Order order;
     @Override
     public String toString() {
         return numOfMonths +" months at " + monthly_fee +"Euro/month";
