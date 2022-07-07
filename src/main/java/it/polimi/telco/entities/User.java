@@ -2,6 +2,7 @@ package it.polimi.telco.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,13 +20,16 @@ public class User implements Serializable {
     private String lastname;
     private String username;
     private String password;
-    private Integer insolvent=0;
+    private int insolvent = 0;
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "user")
     private List<ServicePackage> servicePackages;
 
-   @OneToMany(mappedBy="creator")
-    private List<Order> orders;
+   @OneToMany(fetch= FetchType.EAGER, mappedBy="creator")
+    private List<Order> orders = new ArrayList<>();
+
+   @OneToOne(mappedBy = "user", orphanRemoval = true)
+   private Alert alert;
 
     public User(){
 
@@ -83,12 +87,19 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public Integer getInsolvent() {
+    public int getInsolvent() {
         return insolvent;
     }
 
-    public void setInsolvent(Integer insolvent) {
-        this.insolvent = insolvent;
+    public void setInsolvent() {
+        this.insolvent = this.insolvent+1;
     }
 
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(Order order) {
+            this.orders.add(order);
+    }
 }

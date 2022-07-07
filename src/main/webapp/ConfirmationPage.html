@@ -9,8 +9,16 @@
 <h1> THIS IS YOUR ORDER:  </h1>
 <table class="table">
     <tbody>
-    <tr th:each="item:${services}">
-            <td th:text="${item.getTypeofService()}"> Pacakge</td>
+    <tr>
+            <td th:each="item:${services}" th:text="${item.getTypeofService()}"> Package</td>
+   <!-- </tr>
+    <tr>-->
+        <td th:text="'Optional products: ' + ${order.getProducts()}">Package</td>
+        <td th:text="'Total fee: ' + ${order.getTotalValueOrder()} + '$'">Package</td>
+        <td th:text="'Subscription starting on ' + ${order.getDate_of_subscription()}">Package</td>
+        <td th:text="'Subscription valid for ' + ${order.getValidityPeriod().getNumOfMonths()} + ' months, ending on ' + ${order.getDate_end_subscription()}">Package</td>
+        <td th:text="'Order date: ' + ${order.getDate_of_creation()}">Package</td>
+
     </tr>
     </tbody>
 </table>

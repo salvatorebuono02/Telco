@@ -64,24 +64,31 @@ public class ConfirmationPage extends HttpServlet {
                 System.out.println(services);
                 //TODO crea ordine
                 String[] optionalProducts = req.getParameterValues("optionalProducts");
-                int vd = Integer.parseInt(req.getParameter("validityPeriod"));
+                int vdId = Integer.parseInt(req.getParameter("validityPeriod"));
                 String subscription = req.getParameter("validityStart");
                 System.out.println(subscription);
                 LocalDate s = LocalDate.parse(subscription);
                 Date dc=new Date();
                 ArrayList<Product> productArrayList = new ArrayList<>();
                 Order order = new Order();
+                float totalValue=0;
                 if (optionalProducts!=null){
-                    for (String pId : optionalProducts)
-                        productArrayList.add(servicePackageBean.findProductById(Integer.parseInt(pId)));
+                    for (String pId : optionalProducts){
+                        Product product= servicePackageBean.findProductById(Integer.parseInt(pId));
+                        productArrayList.add(product);
+                        totalValue=totalValue + (product.getMonthly_fee());
+                    }
                     order.setProducts(productArrayList);
                 }
-                ValidityPeriod validityPeriod = servicePackageBean.findValidityPeriodById(vd);
-
+                ValidityPeriod validityPeriod = servicePackageBean.findValidityPeriodById(vdId);
+                LocalDate end= s.plusMonths(validityPeriod.getNumOfMonths());
+                totalValue= totalValue + (validityPeriod.getMonthly_fee()*validityPeriod.getNumOfMonths());
                 order.setDate_of_creation(dc);
                 order.setDate_of_subscription(s);
+                order.setDate_end_subscription(end);
                 order.setService(sp.get());
                 order.setValidityPeriod(validityPeriod);
+                order.setTotalValueOrder(totalValue);
 
                 if (userId != null) {
                     User user = userBean.findById(userId);
@@ -93,9 +100,17 @@ public class ConfirmationPage extends HttpServlet {
                     int status= (int) (((Math.random()*2)));
                     if (status==1){
                         orderStatus="orderOk";
+                        order.setConfirmed(true);
                     }
-                    else
+                    else{
                         orderStatus="order not ok ESCI I SOLDI";
+                        order.setConfirmed(false);
+                        System.out.println(user.getInsolvent());
+                        user.setInsolvent();
+                        System.out.println(user.getInsolvent());
+                        user.setOrders(order);
+                        System.out.println("user insolvent orders: "+user.getOrders());
+                    }
                     webContext.setVariable("orderStatus",orderStatus);
                     path="ConfirmationPage.html";
                     templateEngine.process(path, webContext, resp.getWriter());
@@ -118,9 +133,18 @@ public class ConfirmationPage extends HttpServlet {
                 int status= (int) (((Math.random()*2)));
                 if (status==1){
                     orderStatus="orderOk";
+                    order.get().setConfirmed(true);
                 }
-                else
+                else{
                     orderStatus="order not ok ESCI I SOLDI";
+                    order.get().setConfirmed(false);
+                    System.out.println(user.getInsolvent());
+                    user.setInsolvent();
+                    System.out.println(user.getInsolvent());
+                    user.setOrders(order.get());
+                    System.out.println("user insolvent orders: "+user.getOrders());
+                }
+
                 webContext.setVariable("orderStatus",orderStatus);
                 path="ConfirmationPage.html";
                 templateEngine.process(path, webContext, resp.getWriter());

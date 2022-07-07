@@ -37,7 +37,9 @@ public class Order implements Serializable {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "order")
     private List<Product> products;
 
+    private float totalValueOrder;
 
+    private LocalDate date_end_subscription;
     public Order() {
 
     }
@@ -73,6 +75,14 @@ public class Order implements Serializable {
         this.date_of_subscription = date_of_subscription;
     }
 
+    public LocalDate getDate_end_subscription() {
+        return date_end_subscription;
+    }
+
+    public void setDate_end_subscription(LocalDate date_end_subscription) {
+        this.date_end_subscription = date_end_subscription;
+    }
+
     public User getCreator() {
         return creator;
     }
@@ -103,5 +113,13 @@ public class Order implements Serializable {
 
     public void setProducts(List<Product> products) {
         this.products = products;
+    }
+
+    public float getTotalValueOrder() {
+        return totalValueOrder;
+    }
+
+    public void setTotalValueOrder(float totalValueOrder) {
+        this.totalValueOrder = totalValueOrder;
     }
 }

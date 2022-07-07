@@ -26,7 +26,7 @@
         <label>Choose one validityPeriod:</label>
         <input type="checkbox" name="validityPeriod" th:value="${servicePackage.get().getValidityPeriod().id}" th:text="${servicePackage.get().getValidityPeriod().toString()}" required>
         <br>
-        <label for="start">Choose start date:</label><input type="date" id="start" name="validityStart">
+        <label for="start">Choose start date:</label><input type="date" id="start" name="validityStart" required>
     </fieldset>
     <br>
     <button type="submit"  name="servicePackageId" th:value="${servicePackage.get().getId()}" > BUY </button>
