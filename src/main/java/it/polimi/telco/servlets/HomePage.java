@@ -59,7 +59,7 @@ public class HomePage extends HttpServlet {
             final WebContext webContext=new WebContext(req,resp,servletContext,req.getLocale());
             if(user!=null){
                 webContext.setVariable("user",user);
-                userOrders =user.getOrders();
+                userOrders =orderBean.findFromCreator(user);
                 System.out.println(userOrders);
                 if (!userOrders.isEmpty())
                     webContext.setVariable("active", userOrders);
@@ -108,10 +108,11 @@ public class HomePage extends HttpServlet {
         for (ServicePackage s: sps){
             spsId.add(s.getId());
         }
-
+        System.out.println(spsId);
         for (ServicePackage s:userSp){
             userSpId.add(s.getId());
         }
+        System.out.println("userpackageid"+userSpId);
         /*for (ServicePackage sp:spIds){
             if (!userSp.contains(sp)){
                 System.out.println("sono dentro if: pacchetto è available");
@@ -124,6 +125,7 @@ public class HomePage extends HttpServlet {
                 available.add(i);
             }
         }
+        System.out.println("Available"+available);
         return available;
     }
 }

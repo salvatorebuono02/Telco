@@ -61,6 +61,7 @@ public class ConfirmationPage extends HttpServlet {
         if(orderBean.getOrderInStandBy()==-1) {
             Optional<ServicePackage> sp = servicePackageBean.findServicePackageById(servicePackageId);
             if (sp.isPresent()) {
+                System.out.println("confPage 64");
                 //System.out.println(services);
                 //TODO crea ordine
                 String[] optionalProducts = req.getParameterValues("optionalProducts");
@@ -91,11 +92,10 @@ public class ConfirmationPage extends HttpServlet {
                 order.setTotalValueOrder(totalValue);
 
                 if (userId != null) {
+                    System.out.println("confPage 95");
                     User user = userBean.findById(userId);
                     order.setCreator(user);
                     webContext.setVariable("user", user);
-                    webContext.setVariable("order", order);
-                    webContext.setVariable("services",services);
                     String orderStatus;
                     int status= (int) (((Math.random()*2)));
                     if (status==1){
@@ -108,22 +108,28 @@ public class ConfirmationPage extends HttpServlet {
                         //System.out.println(user.getInsolvent());
                         user.setInsolvent();
                         //System.out.println(user.getInsolvent());
-                        user.setOrders(order);
                         //System.out.println("user insolvent orders: "+user.getOrders());
                     }
+                    orderBean.CreateNewOrder(order);
+                    System.out.println("confirmationpage order:" + order);
+                    System.out.println("confirmationpage: " + orderBean.findFromCreator(user));
                     webContext.setVariable("orderStatus",orderStatus);
+                    webContext.setVariable("order", order);
+                    webContext.setVariable("services",services);
                     path="ConfirmationPage.html";
                     templateEngine.process(path, webContext, resp.getWriter());
                 } else {
+                    System.out.println("confPage 123");
+                    orderBean.CreateNewOrder(order);
                     orderBean.setOrderInStandBy(order.getId());
                     path = "index.html";
                     templateEngine.process(path, webContext, resp.getWriter());
                 }
 
-                orderBean.CreateNewOrder(order);
                 System.out.println("The order has id: " + order.getId());
             }
         }else{
+            System.out.println("confPage 133");
             Optional<Order> order= orderBean.getOrderFromId(orderBean.getOrderInStandBy());
             if(order.isPresent()){
                 User user = userBean.findById(userId);
@@ -143,7 +149,6 @@ public class ConfirmationPage extends HttpServlet {
                     //System.out.println(user.getInsolvent());
                     user.setInsolvent();
                     //System.out.println(user.getInsolvent());
-                    user.setOrders(order.get());
                     //System.out.println("user insolvent orders: "+user.getOrders());
                 }
 

@@ -92,6 +92,7 @@ public class User implements Serializable {
     }
 
     public void setOrders(Order order) {
-            this.orders.add(order);
+       if(!this.orders.contains(order))
+        this.orders.add(order);
     }
 }

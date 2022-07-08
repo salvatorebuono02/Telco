@@ -31,13 +31,15 @@ public class OrderBean {
     }
 
     public List<ServicePackage> getServicePackagesId(User user){
-        if(user.getOrders()==null){
+        if(findFromCreator(user)==null){
             return null;
         }
         List<ServicePackage> servicePackages= new ArrayList<>();
-        for (Order order: user.getOrders()){
+        System.out.println("findavai getService pack" + servicePackages);
+        for (Order order: findFromCreator(user)){
             servicePackages.add(order.getService());
         }
+        System.out.println("findavai getService pack final"+ servicePackages);
         return servicePackages;
 
     }
@@ -47,5 +49,8 @@ public class OrderBean {
         entityManager.flush();
     }
 
+    public List<Order> findFromCreator(User user){
+        return entityManager.createNamedQuery("Order.findFromCreator", Order.class).setParameter("user", user).getResultList();
+    }
 
 }

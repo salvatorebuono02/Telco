@@ -12,6 +12,7 @@ import java.util.List;
 @Table(name = "order",schema = "telco")
 
 @NamedQuery(name="Order.findFromId",query="select o from Order o where o.id=:id")
+@NamedQuery(name="Order.findFromCreator", query="select distinct o from Order o where o.creator=: user")
 public class Order implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
