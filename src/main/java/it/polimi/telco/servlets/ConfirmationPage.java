@@ -61,12 +61,12 @@ public class ConfirmationPage extends HttpServlet {
         if(orderBean.getOrderInStandBy()==-1) {
             Optional<ServicePackage> sp = servicePackageBean.findServicePackageById(servicePackageId);
             if (sp.isPresent()) {
-                System.out.println(services);
+                //System.out.println(services);
                 //TODO crea ordine
                 String[] optionalProducts = req.getParameterValues("optionalProducts");
                 int vdId = Integer.parseInt(req.getParameter("validityPeriod"));
                 String subscription = req.getParameter("validityStart");
-                System.out.println(subscription);
+                //System.out.println(subscription);
                 LocalDate s = LocalDate.parse(subscription);
                 Date dc=new Date();
                 ArrayList<Product> productArrayList = new ArrayList<>();
@@ -105,11 +105,11 @@ public class ConfirmationPage extends HttpServlet {
                     else{
                         orderStatus="order not ok ESCI I SOLDI";
                         order.setConfirmed(false);
-                        System.out.println(user.getInsolvent());
+                        //System.out.println(user.getInsolvent());
                         user.setInsolvent();
-                        System.out.println(user.getInsolvent());
+                        //System.out.println(user.getInsolvent());
                         user.setOrders(order);
-                        System.out.println("user insolvent orders: "+user.getOrders());
+                        //System.out.println("user insolvent orders: "+user.getOrders());
                     }
                     webContext.setVariable("orderStatus",orderStatus);
                     path="ConfirmationPage.html";
@@ -120,6 +120,8 @@ public class ConfirmationPage extends HttpServlet {
                     templateEngine.process(path, webContext, resp.getWriter());
                 }
 
+                orderBean.CreateNewOrder(order);
+                System.out.println("The order has id: " + order.getId());
             }
         }else{
             Optional<Order> order= orderBean.getOrderFromId(orderBean.getOrderInStandBy());
@@ -138,11 +140,11 @@ public class ConfirmationPage extends HttpServlet {
                 else{
                     orderStatus="order not ok ESCI I SOLDI";
                     order.get().setConfirmed(false);
-                    System.out.println(user.getInsolvent());
+                    //System.out.println(user.getInsolvent());
                     user.setInsolvent();
-                    System.out.println(user.getInsolvent());
+                    //System.out.println(user.getInsolvent());
                     user.setOrders(order.get());
-                    System.out.println("user insolvent orders: "+user.getOrders());
+                    //System.out.println("user insolvent orders: "+user.getOrders());
                 }
 
                 webContext.setVariable("orderStatus",orderStatus);

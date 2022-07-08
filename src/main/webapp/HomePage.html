@@ -15,10 +15,11 @@
     <table class="table">
             <tbody>
             <tr th:each="item:${active}">
-                <td th:text="${item.name}" action="serviceView">Package</td>
-                <td th:text="${item.getValidityPeriod().getNumOfMonths()}">Package</td>
-                <td th:text="${item.getValidityPeriod().getMonthly_fee()}">Package</td>
-<!--                <td th:text="${p.getProducts()}">Package</td>-->
+                <td th:text="${item.getService().name}">Package</td>
+                <td th:text="${item.getDate_of_subscription()}">Package</td>
+                <td th:text="${item.getDate_end_subscription()}">Package</td>
+                <td th:text="${item.getProducts()}">Package</td>
+
             </tr>
             </tbody>
         </table>

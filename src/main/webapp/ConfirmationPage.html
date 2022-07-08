@@ -7,6 +7,8 @@
 </head>
 <body>
 <h1> THIS IS YOUR ORDER:  </h1>
+<td th:text="${user!=null} ? ${user.username}: 'You are not logged in'" />
+
 <table class="table">
     <tbody>
     <tr>
@@ -24,6 +26,8 @@
 </table>
 
 <p th:text="${orderStatus}"></p>
-
+<form action="HomePage" method="get">
+    <input type="submit" value="Home Page">
+</form>
 </body>
 </html>

@@ -23,9 +23,9 @@ public class ServicePackage implements Serializable {
 
     @OneToMany(mappedBy ="service",orphanRemoval = true)
     private List<Order> orders;
-    @ManyToOne(fetch = FetchType.EAGER)
+    /*@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
-    private User user;
+    private User user;*/
 
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -53,14 +53,6 @@ public class ServicePackage implements Serializable {
 
     public void setValidityPeriod(ValidityPeriod validityPeriod) {
         this.validityPeriod = validityPeriod;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public int getId() {

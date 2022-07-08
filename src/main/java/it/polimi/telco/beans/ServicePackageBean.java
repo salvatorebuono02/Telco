@@ -21,20 +21,8 @@ public class ServicePackageBean {
 
     public ServicePackageBean(){}
 
-    public List<ServicePackage> findActive(User user){
-        List<ServicePackage> allServicePackages=entityManager.createNamedQuery("ServicePackage.findAll",ServicePackage.class).getResultList();
-        List<ServicePackage> activeServicePackages=new ArrayList<>();
-        for(int i=0;i< allServicePackages.size();i++){
-            System.out.println(allServicePackages.get(i).getName());
-            if(allServicePackages.get(i).getUser()!=null && allServicePackages.get(i).getUser().getId()==user.getId()){
-                activeServicePackages.add(allServicePackages.get(i));
-                System.out.println("user trovato in pack" + allServicePackages.get(i).getName());
-            }
 
-        }
-        return activeServicePackages;
-    }
-    public List<ServicePackage> findAvailable(User user){
+    /*public List<ServicePackage> findAvailable(User user){
         List<ServicePackage> allServicePackages=entityManager.createNamedQuery("ServicePackage.findAll",ServicePackage.class).getResultList();
         List<ServicePackage> availableServicePackages=new ArrayList<>();
         for(int i=0;i< allServicePackages.size();i++){
@@ -47,6 +35,9 @@ public class ServicePackageBean {
                 availableServicePackages.add(allServicePackages.get(i));
         }
         return availableServicePackages;
+    }*/
+    public List<ServicePackage> findAllServicePackages(){
+        return entityManager.createNamedQuery("ServicePackage.findAll",ServicePackage.class).getResultList();
     }
 
     public ServicePackage findServicePackageByName(String name){

@@ -1,7 +1,9 @@
 package it.polimi.telco.servlets;
 
 import it.polimi.telco.beans.ServicePackageBean;
+import it.polimi.telco.beans.UserBean;
 import it.polimi.telco.entities.ServicePackage;
+import it.polimi.telco.entities.User;
 import it.polimi.telco.entities.services.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -31,6 +33,8 @@ public class ShowServicePackage extends HttpServlet {
 
     @EJB
     private ServicePackageBean servicePackageBean;
+    @EJB
+    private UserBean userBean;
 
     public void init() throws ServletException {
         ServletContext servletContext = getServletContext();
@@ -52,9 +56,13 @@ public class ShowServicePackage extends HttpServlet {
             DateFormat df = new SimpleDateFormat(pattern);
             Date today = Calendar.getInstance().getTime();
             String date = df.format(today);
+            int userId= (int) req.getSession().getAttribute("userId");
+            User user = userBean.findById(userId);
+
             webContext.setVariable("services",services);
             webContext.setVariable("servicePackage",sp);
             webContext.setVariable("date",date);
+            webContext.setVariable("user",user);
             String path="ShowServicePackage.html";
             templateEngine.process(path,webContext,resp.getWriter());}
         else throw new ServletException();
