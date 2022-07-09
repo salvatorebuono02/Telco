@@ -19,6 +19,9 @@ public class Visit extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+        req.getSession().setAttribute("user", null);
+        //TODO vedere se funziona così user e senza webcontent
+        req.setAttribute("user", null);
         String path = getServletContext().getContextPath() + "/HomePage";
         resp.sendRedirect(path);
         //TODO controllo dopo login che non abbia già il pacchetto che voglio comprare

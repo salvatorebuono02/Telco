@@ -23,19 +23,20 @@ public class Order implements Serializable {
 
     private boolean confirmed;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "creator")
     private User creator;
 
-    @ManyToOne
+    @ManyToOne(fetch= FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name= "serviceId")
     private ServicePackage service;
 
-    @OneToOne
+    //TODO orphanRemoval?
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name="validityId")
     private ValidityPeriod validityPeriod;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "order")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", cascade = CascadeType.ALL)
     private List<Product> products;
 
     private float totalValueOrder;

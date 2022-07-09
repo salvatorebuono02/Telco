@@ -1,6 +1,8 @@
 package it.polimi.telco.beans;
 
+import it.polimi.telco.entities.Alert;
 import it.polimi.telco.entities.Employee;
+import it.polimi.telco.entities.Order;
 import it.polimi.telco.entities.User;
 import it.polimi.telco.exceptions.CredentialsException;
 
@@ -9,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.validation.ConstraintViolationException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -60,5 +63,46 @@ public class UserBean {
         em.persist(newUser);
         em.flush();
         return newUser;
+    }
+
+    public void createAlert(User user, Order order){
+        Alert alert =new Alert();
+        alert.setUser(user);
+        alert.setAmount(order.getTotalValueOrder());
+        alert.setLastRejection(order.getDate_of_creation());
+        try{
+            em.persist(alert);
+            em.flush();
+        } catch (ConstraintViolationException ignored) {}
+    }
+
+    public void setFailedPayments(User user ){
+        User user1= em.find(User.class, user.getId());
+        user1.setFailedPayments();
+        em.merge(user1);
+    }
+
+
+    public void removeFailedPayments(User user){
+        User user1 = em.find(User.class,user.getId());
+        user1.removeFailedPayment();
+        em.merge(user1);
+    }
+
+    public void setInsolvent(User user, boolean b) {
+        User user1 = em.find(User.class, user.getId());
+        user1.setInsolvent(b);
+        em.merge(user1);
+    }
+
+    public void updateAlert(Alert alert, Order order) {
+        Alert alert1= em.find(Alert.class, alert.getId());
+        alert1.setAmount(order.getTotalValueOrder());
+        alert1.setLastRejection(order.getDate_of_creation());
+        em.merge(alert1);
+    }
+
+    public Alert findAlertByUser(User user) {
+        return em.createNamedQuery("Alert.findByUser", Alert.class).setParameter("user",user).getResultStream().findFirst().get();
     }
 }

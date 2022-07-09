@@ -15,15 +15,15 @@ import java.util.Optional;
 public class OrderBean {
     @PersistenceContext
     private EntityManager entityManager;
-    private int orderInStandBy=-1;
+//    private int orderInStandBy=-1;
 
-    public int getOrderInStandBy() {
+   /* public int getOrderInStandBy() {
         return orderInStandBy;
     }
 
     public void setOrderInStandBy(int orderInStandBy) {
         this.orderInStandBy = orderInStandBy;
-    }
+    }*/
 
     //TODO usare get() con findFirst() nelle query ed eliminare optional nei servlet
     public Optional<Order> getOrderFromId(int id){
@@ -35,11 +35,9 @@ public class OrderBean {
             return null;
         }
         List<ServicePackage> servicePackages= new ArrayList<>();
-        System.out.println("findavai getService pack" + servicePackages);
         for (Order order: findFromCreator(user)){
             servicePackages.add(order.getService());
         }
-        System.out.println("findavai getService pack final"+ servicePackages);
         return servicePackages;
 
     }
@@ -49,8 +47,29 @@ public class OrderBean {
         entityManager.flush();
     }
 
+    public void updateOrder(Order o){
+        Order order = entityManager.merge(o);
+    }
+
+    public void removeOrder(Order o){
+        Order order = entityManager.merge(o);
+        entityManager.remove(order);
+        entityManager.flush();
+    }
+
     public List<Order> findFromCreator(User user){
         return entityManager.createNamedQuery("Order.findFromCreator", Order.class).setParameter("user", user).getResultList();
     }
 
+    public void setConfirmed(Order order, boolean b) {
+        Order order1 = entityManager.find(Order.class, order.getId());
+        order1.setConfirmed(b);
+        entityManager.merge(order1);
+    }
+
+    public void setCreator(Order order, User user){
+        Order order1=entityManager.find(Order.class, order.getId());
+        order1.setCreator(user);
+        entityManager.merge(order1);
+    }
 }

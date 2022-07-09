@@ -21,7 +21,7 @@ public class ServicePackage implements Serializable {
     private String name;
 
 
-    @OneToMany(mappedBy ="service",orphanRemoval = true)
+    @OneToMany(mappedBy ="service",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Order> orders;
     /*@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
@@ -43,7 +43,7 @@ public class ServicePackage implements Serializable {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "id")
     private List<MobileInternetService> mobileInternetServices;
 */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "validityPeriodId")
     private ValidityPeriod validityPeriod;
 

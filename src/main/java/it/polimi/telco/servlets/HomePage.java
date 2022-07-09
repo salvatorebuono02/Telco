@@ -49,21 +49,22 @@ public class HomePage extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        User user=null;
+        User user=(User) req.getSession().getAttribute("user");
         List<Order> userOrders =null;
         List<ServicePackage> availableServicePackages=new ArrayList<>();
-        if (req.getSession().getAttribute("userId")!=null){
-            int userId=(int) req.getSession().getAttribute("userId");
-            user = userBean.findById(userId);
+        if (user!=null){
+            //user=(User) req.getSession().getAttribute("user");
+            //user = userBean.findById(user);
             ServletContext servletContext=getServletContext();
             final WebContext webContext=new WebContext(req,resp,servletContext,req.getLocale());
-            if(user!=null){
-                webContext.setVariable("user",user);
+            //if(user!=null){
+                webContext.getSession().setAttribute("user",user);
+                webContext.setVariable("user", user);
                 userOrders =orderBean.findFromCreator(user);
                 System.out.println(userOrders);
                 if (!userOrders.isEmpty())
                     webContext.setVariable("active", userOrders);
-            }
+            //}
 
             //activeServicePackages
             //availableServicePackages
@@ -83,14 +84,16 @@ public class HomePage extends HttpServlet {
         else {
             ServletContext servletContext=getServletContext();
             final WebContext webContext=new WebContext(req,resp,servletContext,req.getLocale());
-            //availableServicePackages
-            List<Integer> tmp=findAvailable(user);
+            //availableServicePackages when visit user are always all packages
+            availableServicePackages.addAll(servicePackageBean.findAllServicePackages());
+            webContext.setVariable("available",availableServicePackages);
+            /* List<Integer> tmp=findAvailable(user);
             for (Integer i:tmp){
                 if(servicePackageBean.findServicePackageById(i).isPresent())
                     availableServicePackages.add(servicePackageBean.findServicePackageById(i).get());
             }
             if (!availableServicePackages.isEmpty() )
-                webContext.setVariable("available",availableServicePackages);
+                webContext.setVariable("available",availableServicePackages);*/
             String path="HomePage.html";
             templateEngine.process(path,webContext,resp.getWriter());
         }

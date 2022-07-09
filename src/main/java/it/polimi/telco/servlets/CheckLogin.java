@@ -3,6 +3,8 @@ package it.polimi.telco.servlets;
 import it.polimi.telco.beans.EmployeeBean;
 import it.polimi.telco.beans.OrderBean;
 import it.polimi.telco.beans.UserBean;
+import it.polimi.telco.entities.Employee;
+import it.polimi.telco.entities.User;
 import it.polimi.telco.exceptions.CredentialsException;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.thymeleaf.TemplateEngine;
@@ -81,28 +83,33 @@ public class CheckLogin extends HttpServlet {
                 e.printStackTrace();
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Could not check credentials");
                 return;            }
+            ServletContext servletContext = getServletContext();
+            final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
             if(userId==null){
-                ServletContext servletContext = getServletContext();
-                final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
                 ctx.setVariable("errorMsg", "Incorrect username or password");
                 path = "/index.html";
                 templateEngine.process(path, ctx, response.getWriter());
             } else {
-                request.getSession().setAttribute("userId", userId);
+                Employee employee= employeeBean.findById(userId);
+                request.getSession().setAttribute("employee", employee);
+                ctx.setVariable("employee", employee);
                 path = getServletContext().getContextPath() + "/EmployeeHomePage";
                 response.sendRedirect(path);
             }
 
         } else {
             //TODO si può usare sessione, mettendo order in session e usando di nuovo true e false nel orderStandby
-            request.getSession().setAttribute("userId", userId);
+            System.out.println("dentro user login ");
+            User user= userBean.findById(userId);
+            request.getSession().setAttribute("user", user);
             ServletContext servletContext = getServletContext();
             final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-            if (orderBean.getOrderInStandBy()!=-1) {
+            ctx.setVariable("user", user);
+            if (request.getSession().getAttribute("orderId")!=null) {
                 path = getServletContext().getContextPath() + "/ConfirmationPage";
             }
             else{
-                orderBean.setOrderInStandBy(-1);
+                System.out.println("user login: " + user);
                 path = getServletContext().getContextPath() + "/HomePage";
             }
             response.sendRedirect(path);

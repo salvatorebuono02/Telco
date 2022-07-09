@@ -20,13 +20,16 @@ public class User implements Serializable {
     private String lastname;
     private String username;
     private String password;
-    private int insolvent = 0;
+
+    private boolean insolvent=false;
+
+    private int failedPayments = 0;
 
 
-   @OneToMany(fetch= FetchType.EAGER, mappedBy="creator")
+   @OneToMany(fetch= FetchType.EAGER, mappedBy="creator",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Order> orders = new ArrayList<>();
 
-   @OneToOne(mappedBy = "user", orphanRemoval = true)
+   @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
    private Alert alert;
 
     public User(){
@@ -79,13 +82,15 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public int getInsolvent() {
-        return insolvent;
+    public int getFailedPayments() {
+        return failedPayments;
     }
 
-    public void setInsolvent() {
-        this.insolvent = this.insolvent+1;
+    public void setFailedPayments() {
+        this.failedPayments = this.failedPayments+1;
     }
+
+    public void removeFailedPayment(){this.failedPayments=this.failedPayments-1;}
 
     public List<Order> getOrders() {
         return orders;
@@ -94,5 +99,21 @@ public class User implements Serializable {
     public void setOrders(Order order) {
        if(!this.orders.contains(order))
         this.orders.add(order);
+    }
+
+    public boolean isInsolvent() {
+        return insolvent;
+    }
+
+    public void setInsolvent(boolean insolvent) {
+        this.insolvent = insolvent;
+    }
+
+    public Alert getAlert() {
+        return alert;
+    }
+
+    public void setAlert(Alert alert) {
+        this.alert = alert;
     }
 }

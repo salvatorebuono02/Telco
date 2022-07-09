@@ -56,13 +56,15 @@ public class ShowServicePackage extends HttpServlet {
             DateFormat df = new SimpleDateFormat(pattern);
             Date today = Calendar.getInstance().getTime();
             String date = df.format(today);
-            int userId= (int) req.getSession().getAttribute("userId");
-            User user = userBean.findById(userId);
-
+           if(req.getSession().getAttribute("user")!=null){
+               User user= (User) req.getSession().getAttribute("user");
+               //User user = userBean.findById(userId);
+               webContext.getSession().setAttribute("user",user);
+               webContext.setVariable("user", user);
+           }
             webContext.setVariable("services",services);
             webContext.setVariable("servicePackage",sp);
             webContext.setVariable("date",date);
-            webContext.setVariable("user",user);
             String path="ShowServicePackage.html";
             templateEngine.process(path,webContext,resp.getWriter());}
         else throw new ServletException();

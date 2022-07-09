@@ -6,6 +6,7 @@ import java.util.Date;
 
 @Entity
 @Table(name="alert",schema="telco")
+@NamedQuery(name="Alert.findByUser", query="select a from Alert a where a.user=:user")
 public class Alert implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -13,7 +14,7 @@ public class Alert implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(name = "userId")
     private User user;
 

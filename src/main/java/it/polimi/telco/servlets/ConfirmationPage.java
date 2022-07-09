@@ -17,10 +17,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.xpath.XPath;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @WebServlet("/ConfirmationPage")
@@ -46,19 +44,21 @@ public class ConfirmationPage extends HttpServlet {
         templateResolver.setSuffix(".html");
     }
 
-
-
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doPost(req,resp);
+    }
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ServletContext servletContext=getServletContext();
         final WebContext webContext=new WebContext(req,resp,servletContext,req.getLocale());
-        Integer userId= (Integer) req.getSession().getAttribute("userId");
+        User user= (User) req.getSession().getAttribute("user");
+        System.out.println("USER: " + user);
         String path;
-        int servicePackageId = Integer.parseInt(req.getParameter("servicePackageId"));
-        List<Service> services = servicePackageBean.findServicesFromServicePackageId(servicePackageId);
 
-
-        if(orderBean.getOrderInStandBy()==-1) {
+        //se non c'è un ordine pendente
+        if(req.getSession().getAttribute("orderId")==null){
+            int servicePackageId = Integer.parseInt(req.getParameter("servicePackageId"));
+            List<Service> services = servicePackageBean.findServicesFromServicePackageId(servicePackageId);
             Optional<ServicePackage> sp = servicePackageBean.findServicePackageById(servicePackageId);
             if (sp.isPresent()) {
                 System.out.println("confPage 64");
@@ -91,11 +91,12 @@ public class ConfirmationPage extends HttpServlet {
                 order.setValidityPeriod(validityPeriod);
                 order.setTotalValueOrder(totalValue);
 
-                if (userId != null) {
+                if (user != null) {
                     System.out.println("confPage 95");
-                    User user = userBean.findById(userId);
-                    order.setCreator(user);
-                    webContext.setVariable("user", user);
+                    //User user = userBean.findById(userId);
+                    order.setCreator( user);
+                    webContext.getSession().setAttribute("user", user);
+                    webContext.setVariable("user",user);
                     String orderStatus;
                     int status= (int) (((Math.random()*2)));
                     if (status==1){
@@ -106,13 +107,18 @@ public class ConfirmationPage extends HttpServlet {
                         orderStatus="order not ok ESCI I SOLDI";
                         order.setConfirmed(false);
                         //System.out.println(user.getInsolvent());
-                        user.setInsolvent();
+                        userBean.setFailedPayments(user);
                         //System.out.println(user.getInsolvent());
                         //System.out.println("user insolvent orders: "+user.getOrders());
                     }
                     orderBean.CreateNewOrder(order);
+                    if(user.getFailedPayments()==3)
+                        userBean.createAlert(user, order);
+                    else if (user.getFailedPayments()>3) {
+                        userBean.updateAlert(userBean.findAlertByUser(user), order);
+
+                    }
                     System.out.println("confirmationpage order:" + order);
-                    System.out.println("confirmationpage: " + orderBean.findFromCreator(user));
                     webContext.setVariable("orderStatus",orderStatus);
                     webContext.setVariable("order", order);
                     webContext.setVariable("services",services);
@@ -121,43 +127,84 @@ public class ConfirmationPage extends HttpServlet {
                 } else {
                     System.out.println("confPage 123");
                     orderBean.CreateNewOrder(order);
-                    orderBean.setOrderInStandBy(order.getId());
+//                    orderBean.setOrderInStandBy(order.getId());
+                    req.getSession().setAttribute("orderId", order.getId());
+                    System.out.println(req.getSession().getAttribute("orderId"));
                     path = "index.html";
                     templateEngine.process(path, webContext, resp.getWriter());
                 }
-
-                System.out.println("The order has id: " + order.getId());
             }
-        }else{
+        }else{// c'è un ordine pendente (ordine non andato a buon fine/ ordine da visitor)
+            //TODO check che non ha già stesso ordine (service package)
             System.out.println("confPage 133");
-            Optional<Order> order= orderBean.getOrderFromId(orderBean.getOrderInStandBy());
+            int orderId=(int) req.getSession().getAttribute("orderId");
+            Optional<Order> order= orderBean.getOrderFromId(orderId);
             if(order.isPresent()){
-                User user = userBean.findById(userId);
-                order.get().setCreator(user);
-                webContext.setVariable("user", user);
-                webContext.setVariable("order", order);
-                webContext.setVariable("services",services);
-                String orderStatus;
-                int status= (int) (((Math.random()*2)));
-                if (status==1){
-                    orderStatus="orderOk";
-                    order.get().setConfirmed(true);
-                }
-                else{
-                    orderStatus="order not ok ESCI I SOLDI";
-                    order.get().setConfirmed(false);
-                    //System.out.println(user.getInsolvent());
-                    user.setInsolvent();
-                    //System.out.println(user.getInsolvent());
-                    //System.out.println("user insolvent orders: "+user.getOrders());
+                //User user = userBean.findById(userId);
+                int servicePackageId = order.get().getService().getId();
+                //check se ordine in sessione è nuova prova di pagamento dell'utente
+                boolean orderRetry= (packageAlreadyOwnedByUser(user,order.get(),orderBean) && !order.get().isConfirmed());
+                if(!packageAlreadyOwnedByUser(user, order.get(), orderBean)|| orderRetry){
+                    List<Service> services = servicePackageBean.findServicesFromServicePackageId(servicePackageId);
+                    if(!packageAlreadyOwnedByUser(user, order.get(), orderBean))
+                        orderBean.setCreator(order.get(),user);
+                    webContext.getSession().setAttribute("user", user);
+                    webContext.setVariable("user", user);
+                    webContext.setVariable("order", order.get());
+                    webContext.setVariable("services",services);
+                    String orderStatus;
+                    int status= (int) (((Math.random()*2)));
+                    if (status==1){
+                        orderStatus="orderOk";
+                        orderBean.setConfirmed(order.get(),true);
+                        //se la nuova prova di pagamento va a buon fine, tolgo un flag insolvente dall'utente
+                        if(orderRetry){
+                            userBean.removeFailedPayments(user);
+                            if(user.getFailedPayments()==0)
+                                userBean.setInsolvent(user,false);
+                        }
+
+                    }
+                    else{
+                        orderStatus="order not ok ESCI I SOLDI";
+                        orderBean.setConfirmed(order.get(),false);
+                        //System.out.println(user.getInsolvent());
+                        userBean.setFailedPayments(user);
+                        userBean.setInsolvent(user,true);
+                        //System.out.println(user.getInsolvent());
+                        //System.out.println("user insolvent orders: "+user.getOrders());
+                    }
+                    orderBean.updateOrder(order.get());
+                    if(user.getFailedPayments()==3)
+                        userBean.createAlert(user, order.get());
+                    else if (user.getFailedPayments()>3) {
+                        userBean.updateAlert(userBean.findAlertByUser(user), order.get());
+                    }
+                    req.getSession().setAttribute("orderId", null);
+                    webContext.setVariable("orderStatus",orderStatus);
+                    path="ConfirmationPage.html";
+                    templateEngine.process(path, webContext, resp.getWriter());
+                }else {//ordine già presente nell'elenco dell'utente
+                    orderBean.removeOrder(order.get());
+                   //TODO cambiare tutti i webcontext con user in session.setAttribute
+                    webContext.getSession().setAttribute("user", user);
+                    webContext.setVariable("user", user);
+                    path="HomePage.html";
+                    templateEngine.process(path, webContext, resp.getWriter());
+
                 }
 
-                webContext.setVariable("orderStatus",orderStatus);
-                path="ConfirmationPage.html";
-                templateEngine.process(path, webContext, resp.getWriter());
             }
 
         }
+    }
+
+    private boolean packageAlreadyOwnedByUser(User user, Order order, OrderBean orderBean) {
+        List<ServicePackage> packages= orderBean.getServicePackagesId(user);
+        for(ServicePackage s: packages)
+            if(s.getId()==order.getService().getId())
+                return true;
+        return false;
     }
 
 }
