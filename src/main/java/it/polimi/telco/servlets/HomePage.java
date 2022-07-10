@@ -51,6 +51,7 @@ public class HomePage extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User user=(User) req.getSession().getAttribute("user");
         List<Order> userOrders =null;
+        List<Integer> ordersFailed= null;
         List<ServicePackage> availableServicePackages=new ArrayList<>();
         if (user!=null){
             //user=(User) req.getSession().getAttribute("user");
@@ -62,8 +63,16 @@ public class HomePage extends HttpServlet {
                 webContext.setVariable("user", user);
                 userOrders =orderBean.findFromCreator(user);
                 System.out.println(userOrders);
-                if (!userOrders.isEmpty())
+                if (!userOrders.isEmpty()){
                     webContext.setVariable("active", userOrders);
+                    /*for(Order o:userOrders)
+                        if(!o.isConfirmed()){
+                           ordersFailed= new ArrayList<>();
+                           ordersFailed.add(o.getId());
+                        }*/
+                }
+            webContext.setVariable("ordersFailed", ordersFailed);
+
             //}
 
             //activeServicePackages

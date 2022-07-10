@@ -60,6 +60,9 @@ public class UserBean {
         User newUser= new User();
         newUser.setUsername(username);
         newUser.setPassword(password);
+        newUser.setInsolvent(false);
+        //TODO settare inizio failed payments
+        newUser.setFailedPayments();
         em.persist(newUser);
         em.flush();
         return newUser;
@@ -104,5 +107,11 @@ public class UserBean {
 
     public Alert findAlertByUser(User user) {
         return em.createNamedQuery("Alert.findByUser", Alert.class).setParameter("user",user).getResultStream().findFirst().get();
+    }
+
+    public boolean userAlertPresent(User user) {
+        if(!em.createNamedQuery("Alert.findByUser", Alert.class).setParameter("user",user).getResultList().isEmpty())
+         return true;
+        return false;
     }
 }

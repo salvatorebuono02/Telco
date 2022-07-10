@@ -54,6 +54,11 @@ public class ConfirmationPage extends HttpServlet {
         User user= (User) req.getSession().getAttribute("user");
         System.out.println("USER: " + user);
         String path;
+        if(req.getParameter("orderId")!=null){
+            System.out.println("Inside if, first session orderId: " + req.getSession().getAttribute("orderId"));
+            req.getSession().setAttribute("orderId", req.getParameter("orderId"));
+            System.out.println("session orderId: " + req.getSession().getAttribute("orderId"));
+        }
 
         //se non c'è un ordine pendente
         if(req.getSession().getAttribute("orderId")==null){
@@ -137,7 +142,7 @@ public class ConfirmationPage extends HttpServlet {
         }else{// c'è un ordine pendente (ordine non andato a buon fine/ ordine da visitor)
             //TODO check che non ha già stesso ordine (service package)
             System.out.println("confPage 133");
-            int orderId=(int) req.getSession().getAttribute("orderId");
+            int orderId=  Integer.parseInt((String) req.getSession().getAttribute("orderId"));
             Optional<Order> order= orderBean.getOrderFromId(orderId);
             if(order.isPresent()){
                 //User user = userBean.findById(userId);
@@ -160,8 +165,10 @@ public class ConfirmationPage extends HttpServlet {
                         //se la nuova prova di pagamento va a buon fine, tolgo un flag insolvente dall'utente
                         if(orderRetry){
                             userBean.removeFailedPayments(user);
-                            if(user.getFailedPayments()==0)
+                            if(user.getFailedPayments()==0){
                                 userBean.setInsolvent(user,false);
+                                System.out.println("user no more insolvent: "+ user.isInsolvent());
+                            }
                         }
 
                     }
@@ -171,13 +178,15 @@ public class ConfirmationPage extends HttpServlet {
                         //System.out.println(user.getInsolvent());
                         userBean.setFailedPayments(user);
                         userBean.setInsolvent(user,true);
+                        System.out.println("user insolvent :" + user.isInsolvent());
                         //System.out.println(user.getInsolvent());
                         //System.out.println("user insolvent orders: "+user.getOrders());
                     }
                     orderBean.updateOrder(order.get());
-                    if(user.getFailedPayments()==3)
+                    if(user.getFailedPayments()>=3 && !userBean.userAlertPresent(user))
                         userBean.createAlert(user, order.get());
-                    else if (user.getFailedPayments()>3) {
+                    //TODO se un ordine viene cancellato dal db, bisogna controllare che venga totlto se nella lista degli ordini non pagati
+                    else if (userBean.userAlertPresent(user)) {
                         userBean.updateAlert(userBean.findAlertByUser(user), order.get());
                     }
                     req.getSession().setAttribute("orderId", null);
