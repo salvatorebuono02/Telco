@@ -78,23 +78,28 @@ public class ConfirmationPage extends HttpServlet {
                 ArrayList<Product> productArrayList = new ArrayList<>();
                 Order order = new Order();
                 float totalValue=0;
+                float servicesValue=0;
+                float optionalValue=0;
                 if (optionalProducts!=null){
                     for (String pId : optionalProducts){
                         Product product= servicePackageBean.findProductById(Integer.parseInt(pId));
                         productArrayList.add(product);
-                        totalValue=totalValue + (product.getMonthly_fee());
+                        optionalValue=optionalValue + (product.getMonthly_fee());
                     }
                     order.setProducts(productArrayList);
                 }
                 ValidityPeriod validityPeriod = servicePackageBean.findValidityPeriodById(vdId);
                 LocalDate end= s.plusMonths(validityPeriod.getNumOfMonths());
-                totalValue= totalValue + (validityPeriod.getMonthly_fee()*validityPeriod.getNumOfMonths());
+                servicesValue= servicesValue + (validityPeriod.getMonthly_fee()*validityPeriod.getNumOfMonths());
+                totalValue=optionalValue+servicesValue;
                 order.setDate_of_creation(dc);
                 order.setDate_of_subscription(s);
                 order.setDate_end_subscription(end);
                 order.setService(sp.get());
                 order.setValidityPeriod(validityPeriod);
                 order.setTotalValueOrder(totalValue);
+                order.setTotalvalueproducts(optionalValue);
+                order.setTotalvalueservices(servicesValue);
 
                 if (user != null) {
                     System.out.println("confPage 95");
@@ -130,7 +135,7 @@ public class ConfirmationPage extends HttpServlet {
                     path="ConfirmationPage.html";
                     templateEngine.process(path, webContext, resp.getWriter());
                 } else {
-                    System.out.println("confPage 123");
+                    //System.out.println("confPage 123");
                     orderBean.CreateNewOrder(order);
 //                    orderBean.setOrderInStandBy(order.getId());
                     req.getSession().setAttribute("orderId", order.getId());

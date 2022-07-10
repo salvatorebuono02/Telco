@@ -41,6 +41,25 @@ public class Order implements Serializable {
 
     private float totalValueOrder;
 
+    private float totalvalueservices;
+
+    public float getTotalvalueservices() {
+        return totalvalueservices;
+    }
+
+    public void setTotalvalueservices(float totalvalueservices) {
+        this.totalvalueservices = totalvalueservices;
+    }
+
+    public float getTotalvalueproducts() {
+        return totalvalueproducts;
+    }
+
+    public void setTotalvalueproducts(float totalvalueproducts) {
+        this.totalvalueproducts = totalvalueproducts;
+    }
+
+    private float totalvalueproducts;
     private LocalDate date_end_subscription;
     public Order() {
 
