@@ -44,10 +44,12 @@ public class OrderBean {
     }
 
     public void CreateNewOrder(Order o){
-        List<Product> products=o.getProducts();
-        for (Product p:products){
-            p.setOrders(o);
-            Product p1=entityManager.merge(p);
+        if (o.getProducts()!=null){
+            List<Product> products=o.getProducts();
+            for (Product p:products){
+                p.setOrders(o);
+                Product p1=entityManager.merge(p);
+            }
         }
         Order order = entityManager.merge(o);
     }
