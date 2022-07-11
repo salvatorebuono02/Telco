@@ -1,6 +1,7 @@
 package it.polimi.telco.beans;
 
 import it.polimi.telco.entities.Order;
+import it.polimi.telco.entities.Product;
 import it.polimi.telco.entities.ServicePackage;
 import it.polimi.telco.entities.User;
 
@@ -43,8 +44,12 @@ public class OrderBean {
     }
 
     public void CreateNewOrder(Order o){
-        entityManager.persist(o);
-        entityManager.flush();
+        List<Product> products=o.getProducts();
+        for (Product p:products){
+            p.setOrders(o);
+            Product p1=entityManager.merge(p);
+        }
+        Order order = entityManager.merge(o);
     }
 
     public void updateOrder(Order o){

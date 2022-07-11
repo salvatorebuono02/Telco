@@ -45,9 +45,8 @@ public class EmployeeHomePage extends HttpServlet {
         List<Service> services = employeeBean.findAllServices();
         List<Product> products = employeeBean.findAllProducts();
         List<ValidityPeriod> validityPeriods=employeeBean.findAllValidityPeriods();
-        int employeeId = (int) req.getSession().getAttribute("userId");
-        System.out.println(employeeId);
-        employee = employeeBean.findById(employeeId);
+
+        employee = (Employee) req.getSession().getAttribute("employee");
         ServletContext servletContext = getServletContext();
         final WebContext webContext = new WebContext(req, resp, servletContext, req.getLocale());
         if (employee != null) {

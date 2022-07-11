@@ -29,6 +29,7 @@ public class ServicePackage implements Serializable {
 
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "service_package_product", joinColumns = {@JoinColumn(name = "SERVICEPACKAGES_ID")}, inverseJoinColumns = {@JoinColumn(name = "PRODUCTS_ID")})
     private List<Product> products;
 /*
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "id")

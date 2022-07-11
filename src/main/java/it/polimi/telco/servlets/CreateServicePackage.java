@@ -44,26 +44,23 @@ public class CreateServicePackage extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String nameServPackage=req.getParameter("name");
-        String[] services=req.getParameterValues("services");
-        String[] optionalProducts=req.getParameterValues("optionalProducts");
+        String[] optionalProducts=req.getParameterValues("products");
         String[] validityPeriods= req.getParameterValues("validityPeriods");
-        int employeeId = (int) req.getSession().getAttribute("userId");
-        Employee employee = employeeBean.findById(employeeId);
-        ArrayList<Service> serviceArrayList=new ArrayList<>();
+
+        Employee employee = (Employee) req.getSession().getAttribute("employee");
         ArrayList<Product> productArrayList=new ArrayList<>();
         ArrayList<ValidityPeriod> validityPeriodArrayList=new ArrayList<>();
 
-        for(String service:services){
-            Service serviceSelected=employeeBean.findServiceById(Integer.parseInt(service));
-            if (serviceSelected!=null)
-                serviceArrayList.add(serviceSelected);
-        }
+
 
         if(optionalProducts!=null){
+            System.out.println("optprodct diverso da null");
             for (String optionalProduct:optionalProducts){
                 Product product=servicePackageBean.findProductById(Integer.parseInt(optionalProduct));
-                if (product!=null)
+                if (product!=null){
                     productArrayList.add(product);
+                    System.out.println("Aggiunto prodotto: "+product);
+                }
             }
         }
 
@@ -92,7 +89,7 @@ public class CreateServicePackage extends HttpServlet {
         }
         else {
             try {
-                employeeBean.createServicePackage(nameServPackage,serviceArrayList,productArrayList,validityPeriodArrayList);
+                employeeBean.createServicePackage(nameServPackage,productArrayList,validityPeriodArrayList);
             }
             catch (SQLException e){
                 e.printStackTrace();

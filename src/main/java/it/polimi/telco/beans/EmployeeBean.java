@@ -6,7 +6,6 @@ import it.polimi.telco.exceptions.CredentialsException;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import java.sql.SQLException;
@@ -120,7 +119,7 @@ public class EmployeeBean {
     }
 
 
-    public void createServicePackage(String name,ArrayList<Service> services,ArrayList<Product> products,ArrayList<ValidityPeriod> validityPeriods) throws SQLException{
+    public void createServicePackage(String name, ArrayList<Product> products, ArrayList<ValidityPeriod> validityPeriods) throws SQLException{
         for(int i=0;i< validityPeriods.size();i++){
             ServicePackage servicePackage=new ServicePackage();
             servicePackage.setName(name);

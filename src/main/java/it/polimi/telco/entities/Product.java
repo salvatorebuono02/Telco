@@ -27,12 +27,11 @@ public class Product implements Serializable {
         this.validityPeriod = validityPeriod;
     }
 
-    @ManyToMany(mappedBy = "products")
+    @ManyToMany(mappedBy = "products",fetch = FetchType.EAGER)
     private List<ServicePackage> servicePackages;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "orderId")
-    private Order order;
+    @ManyToMany(fetch = FetchType.EAGER,mappedBy = "products",cascade = CascadeType.ALL)
+    private List<Order> orders;
     public String toString() {
         return monthly_fee +"Euro/month";
     }
@@ -67,5 +66,13 @@ public class Product implements Serializable {
 
     public void setMonthly_fee(int monthly_fee) {
         this.monthly_fee = monthly_fee;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(Order order) {
+        this.orders.add(order);
     }
 }

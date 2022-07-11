@@ -82,12 +82,15 @@ public class ConfirmationPage extends HttpServlet {
                 float optionalValue=0;
                 if (optionalProducts!=null){
                     for (String pId : optionalProducts){
+                        System.out.println("PRODOTTO ORDINE"+pId);
                         Product product= servicePackageBean.findProductById(Integer.parseInt(pId));
                         productArrayList.add(product);
+                        System.out.println(productArrayList);
                         optionalValue=optionalValue + (product.getMonthly_fee());
                     }
                     order.setProducts(productArrayList);
                 }
+                System.out.println("PRODOTTI FINALI ORDINE: "+ order.getProducts());
                 ValidityPeriod validityPeriod = servicePackageBean.findValidityPeriodById(vdId);
                 LocalDate end= s.plusMonths(validityPeriod.getNumOfMonths());
                 servicesValue= servicesValue + (validityPeriod.getMonthly_fee()*validityPeriod.getNumOfMonths());
@@ -100,7 +103,6 @@ public class ConfirmationPage extends HttpServlet {
                 order.setTotalValueOrder(totalValue);
                 order.setTotalvalueproducts(optionalValue);
                 order.setTotalvalueservices(servicesValue);
-
                 if (user != null) {
                     System.out.println("confPage 95");
                     //User user = userBean.findById(userId);

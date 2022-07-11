@@ -36,7 +36,8 @@ public class Order implements Serializable {
     @JoinColumn(name="validityId")
     private ValidityPeriod validityPeriod;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
+    @JoinTable(name = "order_product",joinColumns = {@JoinColumn(name = "order_id")},inverseJoinColumns = {@JoinColumn(name = "product_id")})
     private List<Product> products;
 
     private float totalValueOrder;
@@ -143,4 +144,6 @@ public class Order implements Serializable {
     public void setTotalValueOrder(float totalValueOrder) {
         this.totalValueOrder = totalValueOrder;
     }
+
+
 }

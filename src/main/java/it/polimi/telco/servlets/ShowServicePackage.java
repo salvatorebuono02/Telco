@@ -64,6 +64,8 @@ public class ShowServicePackage extends HttpServlet {
            }
             webContext.setVariable("services",services);
             webContext.setVariable("servicePackage",sp);
+            //OK System.out.println("sp id"+sp.get().getId());
+
             webContext.setVariable("date",date);
             String path="ShowServicePackage.html";
             templateEngine.process(path,webContext,resp.getWriter());}
