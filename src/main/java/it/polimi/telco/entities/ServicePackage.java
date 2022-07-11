@@ -20,40 +20,23 @@ public class ServicePackage implements Serializable {
     private int id;
     private String name;
 
-
     @OneToMany(mappedBy ="service",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Order> orders;
-    /*@ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "userId")
-    private User user;*/
-
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "service_package_product", joinColumns = {@JoinColumn(name = "SERVICEPACKAGES_ID")}, inverseJoinColumns = {@JoinColumn(name = "PRODUCTS_ID")})
     private List<Product> products;
-/*
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "id")
-    private List<FixedPhoneService> fixedPhoneServices;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "id")
-    private List<FixedInternetService> fixedInternetServices;
+    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinTable(name = "service_package_validity_periods", joinColumns = {@JoinColumn(name = "servicePackage_id")}, inverseJoinColumns = {@JoinColumn(name = "validityPeriod_id")})
+    private List<ValidityPeriod> validityPeriods;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "id")
-    private List<MobilePhoneService> mobilePhoneServices;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "id")
-    private List<MobileInternetService> mobileInternetServices;
-*/
-    @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
-    @JoinColumn(name = "validityPeriodId")
-    private ValidityPeriod validityPeriod;
-
-    public ValidityPeriod getValidityPeriod() {
-        return validityPeriod;
+    public List<ValidityPeriod> getValidityPeriods() {
+        return validityPeriods;
     }
 
-    public void setValidityPeriod(ValidityPeriod validityPeriod) {
-        this.validityPeriod = validityPeriod;
+    public void setValidityPeriod(List<ValidityPeriod> validityPeriods) {
+        this.validityPeriods = validityPeriods;
     }
 
     public int getId() {

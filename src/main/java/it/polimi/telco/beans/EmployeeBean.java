@@ -1,6 +1,7 @@
 package it.polimi.telco.beans;
 
 import it.polimi.telco.entities.*;
+import it.polimi.telco.entities.employeeReport.*;
 import it.polimi.telco.entities.services.*;
 import it.polimi.telco.exceptions.CredentialsException;
 
@@ -119,15 +120,65 @@ public class EmployeeBean {
     }
 
 
-    public void createServicePackage(String name, ArrayList<Product> products, ArrayList<ValidityPeriod> validityPeriods) throws SQLException{
-        for(int i=0;i< validityPeriods.size();i++){
+    public ServicePackage createServicePackage(String name, ArrayList<Product> products, ArrayList<ValidityPeriod> validityPeriods) throws SQLException{
             ServicePackage servicePackage=new ServicePackage();
             servicePackage.setName(name);
             servicePackage.setProducts(products);
-            servicePackage.setValidityPeriod(validityPeriods.get(i));
-            em.persist(servicePackage);
-            em.flush();
-        }
+            servicePackage.setValidityPeriod(validityPeriods);
+            ServicePackage servicePackage1= em.merge(servicePackage);
+            return servicePackage1;
+    }
 
+    public List<AlertReport> findAllAlertReport(){
+        return em.createNamedQuery("AlertReport.findAll", AlertReport.class).getResultList();
+    }
+
+    public List<AvgProductsPerPackage> findAllAvgProd(){
+        return em.createNamedQuery("AvgProductsPerPackage.findAll", AvgProductsPerPackage.class).getResultList();
+    }
+    public List<AvgProductsPerPackage> findByPackage(int package_id){
+        return em.createNamedQuery("AvgProductsPerPackage.findByPackage", AvgProductsPerPackage.class).setParameter("package_id", package_id).getResultList();
+    }
+
+    public BestProduct findBestProduct(){
+        return em.createNamedQuery("BestProduct.findOne", BestProduct.class).getSingleResult();
+    }
+
+    public List<InsolventUsers> findAllInsolvents(){
+        return em.createNamedQuery("InsolventUsers.findAll", InsolventUsers.class).getResultList();
+    }
+
+    public List<SalesPackage> findAllSalesPack(){
+        return em.createNamedQuery("SalesPackage.findAll", SalesPackage.class).getResultList();
+    }
+
+    public List<SuspendedOrders> findAllSuspended(){
+        return em.createNamedQuery("SuspendedOrders.findAll", SuspendedOrders.class).getResultList();
+    }
+
+    public List<TotalPurchasePackage> findAllPurchasePack(){
+        return em.createNamedQuery("TotalPurchasePackage.findAll", TotalPurchasePackage.class).getResultList();
+    }
+    public List<TotalPurchasePackage> findByPackageWithoutValidity(int package_id){
+        return em.createNamedQuery("TotalPurchasePackage.findByPackage", TotalPurchasePackage.class).setParameter("package_id",package_id).getResultList();
+    }
+
+    public List<TotalPurchasePackageAndValidity> findAllPurchasePackAndVal(){
+        return em.createNamedQuery("TotalPurchasePackageAndValidity.findAll", TotalPurchasePackageAndValidity.class).getResultList();
+    }
+    public List<TotalPurchasePackageAndValidity> findByValidity(int valPeriod_id){
+        return em.createNamedQuery("TotalPurchasePackageAndValidity.findByValidity", TotalPurchasePackageAndValidity.class).setParameter("valPeriod_id",valPeriod_id).getResultList();
+    }
+
+    public List<TotalPurchasePackageAndValidity> findByPackageWithValidity(int package_id){
+        return em.createNamedQuery("TotalPurchasePackageAndValidity.findByPackage", TotalPurchasePackageAndValidity.class).setParameter("package_id",package_id).getResultList();
+    }
+
+
+    public void updateServices(ArrayList<Service> serviceArrayList, ServicePackage servicePackage) {
+        for(Service s:serviceArrayList) {
+            s.setServicePackage(servicePackage);
+            Service service1= em.merge(s);
+        }
     }
 }

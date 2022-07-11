@@ -1,10 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title> EMPLOYEE REPORT PAGE</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<h1> Report Page</h1>
+
+<table class="table">
+    <tbody>
+    <tr>
+        <td> Package</td>
+        <td>Purchases counter</td>
+    </tr>
+    <tr th:each="item:${totalPurchasePack}">
+        <td  th:text="${item.servicePackage.name}"> Package</td>
+        <td  th:text="${item.totalPurchases}">Package</td>
+    </tr>
+    </tbody>
+</table>
+
+<table class="table">
+    <tbody>
+    <tr>
+        <td> Package</td>
+        <td>Validity period</td>
+        <td>Purchases counter</td>
+    </tr>
+    <tr th:each="item:${totalPurchasePackAndVal}">
+        <td  th:text="${item.servicePackage.name}"> Package</td>
+        <td  th:text="${item.validityPeriod}">Package</td>
+        <td  th:text="${item.totalPurchases}">Package</td>
+    </tr>
+    </tbody>
+</table>
+
+<table class="table">
+    <tbody>
+    <tr>
+        <td> Package</td>
+        <td>Package value without products</td>
+        <td> Package value with products </td>
+
+    </tr>
+    <tr th:each="item:${salesPackage}">
+        <td  th:text="${item.servicePackage.name}"> Package</td>
+        <td  th:text="${item.getTotalSalesWithoutProduct()} + '$'">Package</td>
+        <td  th:text="${item.getTotalSalesWithProduct()} + '$'">Package</td>
+    </tr>
+    </tbody>
+</table>
+
+<table class="table">
+    <tbody>
+    <tr>
+        <td> Package</td>
+        <td>Average number of products sold</td>
+
+    </tr>
+    <tr th:each="item:${avgProductsPerPackage}">
+        <td  th:text="${item.servicePackage.name}"> Package</td>
+        <td  th:text="${item.average} + '$'">Package</td>
+    </tr>
+    </tbody>
+</table>
+
+<table class="table">
+    <tbody>
+    <tr>
+        <td> Insolvent users</td>
+        <td>Suspended orders</td>
+        <td>Alert</td>
+
+    </tr>
+    <tr th:each="user:${insolvents}">
+        <td th:text="${user.getUser().username}">Username</td>
+        <td th:each="s:${suspendedOrders}" th:text="${s.order.getCreator().id==user.user_id} ? ${s.order.service} "/>
+        <td th:each="a:${alertReport}" th:text="${a.getAlert().getUser().id==user.user_id} ? ${a.alert.lastRejection} "/>
+    </tr>
+    </tbody>
+</table>
+
+<div>
+    <p th:text="'Best product: '+ ${bestProduct.product.name}"></p>
+</div>
+
+<form action="EmployeeHomePage" method="get">
+    <input type="submit" value="Home Page">
+</form>
+
 
 </body>
 </html>

@@ -11,7 +11,7 @@ public abstract class Service implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "id_servicePkg")
     private ServicePackage servicePackage;
 
     @Id

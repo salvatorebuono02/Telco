@@ -11,6 +11,7 @@ drop trigger if exists updatePurchaseToPackageAndValPeriod;
 drop table if exists salesPackage;
 drop trigger if exists addSales;
 drop trigger if exists updateSales;
+drop trigger if exists createUpdateSales;
 drop trigger if exists createSales;
 
 drop table if exists avgnumofproductsperpackage;
@@ -89,9 +90,9 @@ create table totalPurchasePerPackAndValidityPeriod(
 
 delimiter //
 create definer = current_user trigger createOrderAndAssociatedServicePackageAndValPeriod
-    after insert on service_package for each row begin
+    after insert on service_package_validity_periods for each row begin
     insert into totalPurchasePerPackAndValidityPeriod(package_id, valPeriod_id)
-    values (NEW.id,NEW.validityPeriodId);
+    values (NEW.servicePackage_id,NEW.validityPeriod_id);
 end //
 delimiter ;
 
@@ -268,6 +269,9 @@ create definer = current_user trigger updateOptProduct
     end if;
 end //
 delimiter ;
+
+
+
 
 create table alertsForReport
 (

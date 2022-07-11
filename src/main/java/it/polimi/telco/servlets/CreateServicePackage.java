@@ -4,6 +4,7 @@ import it.polimi.telco.beans.EmployeeBean;
 import it.polimi.telco.beans.ServicePackageBean;
 import it.polimi.telco.entities.Employee;
 import it.polimi.telco.entities.Product;
+import it.polimi.telco.entities.ServicePackage;
 import it.polimi.telco.entities.ValidityPeriod;
 import it.polimi.telco.entities.services.Service;
 import org.thymeleaf.TemplateEngine;
@@ -44,14 +45,20 @@ public class CreateServicePackage extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String nameServPackage=req.getParameter("name");
-        String[] optionalProducts=req.getParameterValues("products");
+        String[] services=req.getParameterValues("services");
+        String[] optionalProducts=req.getParameterValues("optionalProducts");
         String[] validityPeriods= req.getParameterValues("validityPeriods");
 
         Employee employee = (Employee) req.getSession().getAttribute("employee");
         ArrayList<Product> productArrayList=new ArrayList<>();
         ArrayList<ValidityPeriod> validityPeriodArrayList=new ArrayList<>();
+        ArrayList<Service> serviceArrayList=new ArrayList<>();
 
-
+        for(String service:services){
+            Service serviceSelected=employeeBean.findServiceById(Integer.parseInt(service));
+            if (serviceSelected!=null)
+                serviceArrayList.add(serviceSelected);
+        }
 
         if(optionalProducts!=null){
             System.out.println("optprodct diverso da null");
@@ -88,12 +95,14 @@ public class CreateServicePackage extends HttpServlet {
             templateEngine.process(path, ctx, resp.getWriter());
         }
         else {
+            ServicePackage pack = null;
             try {
-                employeeBean.createServicePackage(nameServPackage,productArrayList,validityPeriodArrayList);
+                pack= employeeBean.createServicePackage(nameServPackage,productArrayList,validityPeriodArrayList);
             }
             catch (SQLException e){
                 e.printStackTrace();
-            }
+            }                
+            employeeBean.updateServices(serviceArrayList, pack);
             path=getServletContext().getContextPath()+"/EmployeeHomePage";
             resp.sendRedirect(path);
         }
