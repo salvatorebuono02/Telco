@@ -29,12 +29,20 @@
     <h2>These are the available packages</h2>
     <table class="table">
             <tbody>
+            <tr>
+                <td>Package name</td>
+                <td>Validity periods</td>
+                <td>Optional products</td>
+            </tr>
                     <tr th:each="pack:${available}">
                         <td><a th:href="@{/ShowServicePackage(servicePackageId=${pack.getId()})}"> <span
                                 th:text="${pack.name}"></span></a></td>
-                        <td th:text="${pack.getValidityPeriod().getNumOfMonths()}">Package</td>
-                        <td th:text="${pack.getValidityPeriod().getMonthly_fee()}">Package</td>
-<!--                        <td th:text="${item.getProducts()}">Package</td>-->
+                        <td>
+                            <p th:each="period:${pack.getValidityPeriods()}" th:text="${period.getNumOfMonths()}+'months at ' + ${period.getMonthly_fee()} + '$/month'"></p>
+                        </td>
+                        <td>
+                            <p th:each="product:${pack.getProducts()}" th:text="${product.name}"></p>
+                        </td>
                     </tr>
             </tbody>
         </table>

@@ -43,10 +43,18 @@ public class Registration extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String usrn=null;
         String pwd=null;
+        String name=null;
+        String lastname= null;
+        String email=null;
         try {
             usrn=req.getParameter("username");
             pwd=req.getParameter("pwd");
-            if (usrn == null || pwd == null || usrn.isEmpty() || pwd.isEmpty()) {
+            name=req.getParameter("name");
+            lastname=req.getParameter("lastname");
+            email=req.getParameter("email");
+
+            if (usrn == null || pwd == null || name==null|| lastname==null||email==null||
+                    usrn.isEmpty() || pwd.isEmpty() || name.isEmpty()|| lastname.isEmpty()||email.isEmpty()) {
                 throw new Exception("Missing or empty credential value");
             }
         } catch (Exception e){
@@ -77,7 +85,7 @@ public class Registration extends HttpServlet {
                 if(Objects.equals(role, "user")){
                     try {
                         System.out.println("stai dentro il try");
-                        userBean.createUser(usrn,pwd);
+                        userBean.createUser(usrn,pwd, name, lastname, email);
                         gotoLogin(req,resp);
                     }
                     catch (SQLException e){
@@ -88,7 +96,7 @@ public class Registration extends HttpServlet {
                 else{
                     try {
                         System.out.println("Stai dentro il try dell'employee");
-                        employeeBean.createEmployee(usrn,pwd);
+                        employeeBean.createEmployee(usrn,pwd, name, lastname, email);
                         gotoLogin(req,resp);
                     }
                     catch (SQLException e){

@@ -11,12 +11,13 @@ drop trigger if exists updatePurchaseToPackageAndValPeriod;
 drop table if exists salesPackage;
 drop trigger if exists addSales;
 drop trigger if exists updateSales;
-drop trigger if exists createUpdateSales;
+# drop trigger if exists createUpdateSales;
 drop trigger if exists createSales;
 
 drop table if exists avgnumofproductsperpackage;
 drop table if exists totalnumberofoptionalproduct;
 drop trigger if exists createOrder;
+drop trigger if exists createPackOptProd;
 drop trigger if exists addOptProduct;
 drop trigger if exists updateOptProduct;
 drop trigger if exists updateSales;
@@ -34,6 +35,7 @@ drop trigger if exists updateSuspendedOrder;
 drop table if exists salesForEachOptproduct;
 drop trigger if exists addSalesForEachProduct;
 drop trigger if exists updateSalesForEachProduct;
+drop trigger if exists createSalesForEachProduct;
 
 
 
@@ -169,15 +171,13 @@ delimiter ;
 
 delimiter //
 create definer =current_user trigger createSales
-    after insert on `order` for each row begin
-    if NEW.confirmed=true then
+    after insert on `service_package` for each row begin
         insert into salesPackage(package_id)
-        values (NEW.serviceId);
-    end if;
+        values (NEW.id);
 end //
 delimiter ;
 
-delimiter //
+/*delimiter //
 create definer =current_user trigger createUpdateSales
     after update on `order` for each row begin
     if NEW.confirmed=true then
@@ -185,7 +185,7 @@ create definer =current_user trigger createUpdateSales
         values (NEW.serviceId);
     end if;
 end //
-delimiter ;
+delimiter ;*/
 
 create table avgnumofproductsperpackage
 (
@@ -211,6 +211,14 @@ end //
 delimiter ;
 
 delimiter //
+create definer = current_user trigger createPackOptProd
+    after insert on service_package for each row begin
+    insert into totalnumberofoptionalproduct(package_id)
+    values(NEW.id);
+end //
+delimiter ;
+
+delimiter //
 create definer =current_user trigger addOptProduct
     after insert on `order` for each row begin
     if NEW.confirmed=true then
@@ -219,12 +227,11 @@ create definer =current_user trigger addOptProduct
                                from service_package s
                                where s.id=NEW.serviceId);
         insert into totalnumberofoptionalproduct
-        select sp.id, count(*)
+        select o.serviceId, count(*)
         from `order` as o
-                 join order_product op on o.id = op.order_id
-                 join service_package sp on sp.id = o.serviceId
-        where o.confirmed=true
-        group by sp.id;
+                 left outer join `order_product` op on o.id=op.order_id
+        where o.id=NEW.id
+        group by o.id;
 
         delete from avgnumofproductsperpackage
         where package_id in (select s.id
@@ -249,12 +256,11 @@ create definer = current_user trigger updateOptProduct
                                from service_package s
                                where s.id=NEW.serviceId);
         insert into totalnumberofoptionalproduct
-        select sp.id, count(*)
+        select o.serviceId, count(*)
         from `order` as o
-                 join order_product op on o.id = op.order_id
-                 join service_package sp on sp.id = o.serviceId
-        where o.confirmed=true
-        group by sp.id;
+                 left outer join `order_product` op on o.id=op.order_id
+        where o.id=NEW.id
+        group by o.id;
 
         delete from avgnumofproductsperpackage
         where package_id in (select s.id
@@ -356,9 +362,19 @@ delimiter ;
 create table salesForEachOptproduct
 (
     optionalProduct_id int not null primary key ,
-    sales float not null ,
+    sales float not null default 0,
     foreign key (optionalProduct_id) references product(id)
 );
+
+delimiter //
+create definer=current_user trigger createSalesForEachProduct
+    after insert on product for each row
+    begin
+        insert into salesForEachOptproduct(optionalProduct_id)
+            values (NEW.id);
+    end //
+delimiter ;
+
 
 delimiter //
 create definer =current_user trigger addSalesForEachProduct
@@ -367,11 +383,10 @@ create definer =current_user trigger addSalesForEachProduct
     declare id int;
     if NEW.confirmed=true then
         select p.id,(p.monthly_fee*v.numOfMonths) into id,y
-        from product p join order_product op on p.id = op.order_id
+        from product p left outer join order_product op on p.id = op.product_id
                        join `order` o on op.order_id = o.id
-                       join validityperiod v on v.id = o.validityId
-        where o.id=NEW.id
-        group by p.id;
+                       join validityperiod v on o.validityId = v.id
+        where o.id=NEW.id;
         update salesForEachOptproduct s
         set s.sales=s.sales+y
         where s.optionalProduct_id = id;
@@ -386,10 +401,10 @@ create definer =current_user trigger updateSalesForEachProduct
     declare id int;
     if NEW.confirmed=true then
         select p.id,(p.monthly_fee*v.numOfMonths) into id,y
-        from product p join order_product op on p.id = op.order_id
+        from product p join order_product op on p.id = op.product_id
                        join `order` o on op.order_id = o.id
-                       join validityperiod v on v.id = o.validityId        where o.id=NEW.id
-        group by p.id;
+                       join validityperiod v on o.validityId = v.id
+        where o.id=NEW.id;
         update salesForEachOptproduct s
         set s.sales=s.sales+y
         where s.optionalProduct_id = id;

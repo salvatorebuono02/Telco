@@ -22,7 +22,6 @@ public class EmployeeBean {
     public EmployeeBean() {
 
     }
-
     public Employee findById(int employeeId) {
         return em.find(Employee.class, employeeId);
     }
@@ -58,9 +57,12 @@ public class EmployeeBean {
         }
     }
 
-    public Employee createEmployee(String username, String password) throws SQLException {
+    public Employee createEmployee(String username, String password, String name, String lastname, String email) throws SQLException {
         Employee newEmployee = new Employee();
         newEmployee.setUsername(username);
+        newEmployee.setName(name);
+        newEmployee.setLastname(lastname);
+        newEmployee.setEmail(email);
         newEmployee.setPassword(password);
         em.persist(newEmployee);
         em.flush();

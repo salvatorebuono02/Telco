@@ -47,17 +47,18 @@ public class Alert implements Serializable {
         return userName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserName() {
+        this.userName = this.user.getUsername();
     }
 
     public String getUserEmail() {
         return userEmail;
     }
 
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
+    public void setUserEmail() {
+        this.userEmail = this.user.getEmail();
     }
+
 
     public float getAmount() {
         return amount;

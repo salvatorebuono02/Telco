@@ -10,7 +10,7 @@
 <body>
 
 <h1>HOMEPAGE</h1>
-<h4 th:text="${employee.getUsername()}">Name </h4>
+<h4 th:text="${employee.username}">Name </h4>
 <h2>DESIGN YOUR PACKAGE</h2>
 
 <form action="#" th:action="@{/CreateServicePackage(servicestypes=${servicestypes})}" method="post">

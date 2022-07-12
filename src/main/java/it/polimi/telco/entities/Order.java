@@ -32,7 +32,7 @@ public class Order implements Serializable {
     private ServicePackage service;
 
     //TODO orphanRemoval?
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name="validityId")
     private ValidityPeriod validityPeriod;
 

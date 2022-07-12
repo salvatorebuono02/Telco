@@ -17,15 +17,6 @@ public class Product implements Serializable {
     private int id;
     private String name;
     private int monthly_fee;
-    private int validityPeriod;
-
-    public int getValidityPeriod() {
-        return validityPeriod;
-    }
-
-    public void setValidityPeriod(int validityPeriod) {
-        this.validityPeriod = validityPeriod;
-    }
 
     @ManyToMany(mappedBy = "products",fetch = FetchType.EAGER)
     private List<ServicePackage> servicePackages;

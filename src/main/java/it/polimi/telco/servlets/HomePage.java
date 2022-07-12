@@ -111,6 +111,7 @@ public class HomePage extends HttpServlet {
 
     public List<Integer> findAvailable(User user){
         List<ServicePackage> sps=servicePackageBean.findAllServicePackages();
+        System.out.println("all service packages not id: " + sps);
 
         List<ServicePackage> userSp=orderBean.getServicePackagesId(user);
 
@@ -120,11 +121,11 @@ public class HomePage extends HttpServlet {
         for (ServicePackage s: sps){
             spsId.add(s.getId());
         }
-        System.out.println(spsId);
+        System.out.println("all service packages id: " + spsId);
         for (ServicePackage s:userSp){
             userSpId.add(s.getId());
         }
-        System.out.println("userpackageid"+userSpId);
+        System.out.println("userpackageid: "+userSpId);
         /*for (ServicePackage sp:spIds){
             if (!userSp.contains(sp)){
                 System.out.println("sono dentro if: pacchetto è available");

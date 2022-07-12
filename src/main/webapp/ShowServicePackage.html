@@ -14,9 +14,9 @@
         <tbody>
         <tr th:each="item:${services}">
             <td th:text="${item.getTypeofService()}">Package</td>
-            <td th:text="'Months: ' + ${servicePackage.get().getValidityPeriod().getNumOfMonths()}">Package</td>
+            <!--<td th:text="'Months: ' + ${servicePackage.get().getValidityPeriod().getNumOfMonths()}">Package</td>
             <td th:text="'Price: ' + ${servicePackage.get().getValidityPeriod().getMonthly_fee()}">Package</td>
-            <!--                <td th:text="${p.getProducts()}">Package</td>-->
+            --><!--                <td th:text="${p.getProducts()}">Package</td>-->
         </tr>
         </tbody>
     </table>
@@ -26,7 +26,7 @@
         <input type="checkbox" name="optionalProducts" th:each="op:${servicePackage.get().getProducts()}" th:value="${op.id}" th:text="${op.name}">
         <br>
         <label>Choose one validityPeriod:</label>
-        <input type="checkbox" name="validityPeriod" th:value="${servicePackage.get().getValidityPeriod().id}" th:text="${servicePackage.get().getValidityPeriod().toString()}" required>
+        <input type="checkbox" name="validityPeriod" th:each="period:${servicePackage.get().getValidityPeriods()}" th:value="${period.id}" th:text="${period.getNumOfMonths()}+'months at ' + ${period.getMonthly_fee()} + '$/month'" >
         <br>
         <label for="start">Choose start date:</label><input type="date" id="start" name="validityStart" required>
     </fieldset>

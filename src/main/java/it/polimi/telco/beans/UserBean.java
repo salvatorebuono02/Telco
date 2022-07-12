@@ -56,8 +56,11 @@ public class UserBean {
         }
     }
 
-    public User createUser(String username,String password) throws SQLException {
+    public User createUser(String username,String password,String name, String lastname, String email) throws SQLException {
         User newUser= new User();
+        newUser.setFirstname(name);
+        newUser.setLastname(lastname);
+        newUser.setEmail(email);
         newUser.setUsername(username);
         newUser.setPassword(password);
         newUser.setInsolvent(false);

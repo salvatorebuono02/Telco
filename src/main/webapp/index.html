@@ -17,6 +17,9 @@
 </form>
 <form class="registration" action="Register" method="POST">
     <p style="text-align: center">Registration</p>
+    Name: <input type="text" name="name" required><br>
+    Lastname: <input type="text" name="lastname" required><br>
+    Email: <input type="text" name="email" required><br>
     Username: <input type="text" name="username" required> <br>
     Password: <input type="password" name="pwd" required><br>
     <p th:text=" ${errorMsg}"></p>

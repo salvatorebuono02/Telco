@@ -70,11 +70,17 @@ public class ServicePackageBean {
 
     public List<Service> findServicesFromServicePackageId(int id){
         List<Service> allServices= findAllServices();
+        System.out.println("allServices:" + allServices);
         List<Service> servicesPackage = new ArrayList<>();
         for(Service s : allServices){
-            if(s.getServicePackage().getId()==id)
+            System.out.println("service package connected to service"+ s.getTypeofService()+":"+s.getServicePackage());
+            if(s.getServicePackage()!=null && s.getServicePackage().getId()==id){
+                System.out.println("service has servicepackageid = " + id);
                 servicesPackage.add(s);
+            }
+
         }
+        System.out.println("list of services of package:" + servicesPackage);
         return servicesPackage;
     }
 

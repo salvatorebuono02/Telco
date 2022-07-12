@@ -19,8 +19,8 @@ public class ValidityPeriod implements Serializable {
     private List<ServicePackage> servicePackages;
 
     //TODO orphan removal?
-    @OneToOne(mappedBy="validityPeriod", cascade = CascadeType.ALL )
-    private Order order;
+    @OneToMany(mappedBy="validityPeriod", cascade = CascadeType.ALL )
+    private List<Order> orders;
     @Override
     public String toString() {
         return numOfMonths +" months at " + monthly_fee +"Euro/month";
