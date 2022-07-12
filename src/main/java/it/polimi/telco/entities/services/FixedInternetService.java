@@ -33,5 +33,10 @@ public class FixedInternetService extends Service {
     public String getTypeofService() {
         return "FixedInternetService:" + numOfGiga+"GByte"+" "+feeForExtraGiga+"Euro/ExtraGiga";
     }
+
+    @Override
+    public String getName() {
+        return "FixedInternetService";
+    }
 }
 

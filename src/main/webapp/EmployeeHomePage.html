@@ -13,11 +13,17 @@
 <h4 th:text="${employee.getUsername()}">Name </h4>
 <h2>DESIGN YOUR PACKAGE</h2>
 
-<form action="#" th:action="@{/CreateServicePackage}" method="post">
+<form action="#" th:action="@{/CreateServicePackage(servicestypes=${servicestypes})}" method="post">
     Name: <input type="text" name="name" required> <br>
     <fieldset>
         <legend>Choose one or more services</legend>
-        <input type="checkbox" name="services" th:each="s:${services}" th:value="${s.id}" th:text="${s.getTypeofService()}">
+        <fieldset th:each="stype:${servicestypes}">
+            <legend th:text="${stype}" th:value="${stype}"></legend>
+<!--
+            <input type="checkbox" name="services" th:each="s:${services}" th:value="${s.id}" th:text="${s.getTypeofService()}">
+-->
+            <input type="checkbox" th:name="${stype}" th:each="s:${services}" th:if="${s.getName()==stype}" th:text="${s.getTypeofService()}" th:value="${s.id}">
+        </fieldset>
     </fieldset>
     <fieldset>
         <legend>Choose one or more products</legend>

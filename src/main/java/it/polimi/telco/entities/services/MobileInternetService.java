@@ -32,4 +32,9 @@ public class MobileInternetService extends Service {
     public String getTypeofService() {
         return "MobileInternetService: "+numOfGiga+"Giga "+feeForExtraGiga+"Euro/extraGiga";
     }
+
+    @Override
+    public String getName() {
+        return "MobileInternetService";
+    }
 }

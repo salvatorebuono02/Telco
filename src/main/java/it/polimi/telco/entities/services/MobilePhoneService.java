@@ -12,4 +12,9 @@ public class MobilePhoneService extends Service {
     public String getTypeofService() {
         return "MobilePhoneService";
     }
+
+    @Override
+    public String getName() {
+        return "MobilePhoneService";
+    }
 }

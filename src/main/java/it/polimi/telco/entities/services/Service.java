@@ -34,6 +34,6 @@ public abstract class Service implements Serializable {
         this.servicePackage = servicePackage;
     }
     public abstract String getTypeofService();
-
+    public abstract String getName();
 }
 

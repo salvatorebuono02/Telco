@@ -15,7 +15,7 @@
         <td> Package</td>
         <td>Purchases counter</td>
     </tr>
-    <tr th:each="item:${totalPurchasePack}">
+    <tr th:if="${totalPurchasePack!=null}" th:each="item:${totalPurchasePack}">
         <td  th:text="${item.servicePackage.name}"> Package</td>
         <td  th:text="${item.totalPurchases}">Package</td>
     </tr>
@@ -29,7 +29,7 @@
         <td>Validity period</td>
         <td>Purchases counter</td>
     </tr>
-    <tr th:each="item:${totalPurchasePackAndVal}">
+    <tr th:if="${totalPurchasePackAndVal!=null}" th:each="item:${totalPurchasePackAndVal}">
         <td  th:text="${item.servicePackage.name}"> Package</td>
         <td  th:text="${item.validityPeriod}">Package</td>
         <td  th:text="${item.totalPurchases}">Package</td>
@@ -45,7 +45,7 @@
         <td> Package value with products </td>
 
     </tr>
-    <tr th:each="item:${salesPackage}">
+    <tr th:if="${salesPackage!=null}" th:each="item:${salesPackage}">
         <td  th:text="${item.servicePackage.name}"> Package</td>
         <td  th:text="${item.getTotalSalesWithoutProduct()} + '$'">Package</td>
         <td  th:text="${item.getTotalSalesWithProduct()} + '$'">Package</td>
@@ -60,7 +60,7 @@
         <td>Average number of products sold</td>
 
     </tr>
-    <tr th:each="item:${avgProductsPerPackage}">
+    <tr  th:if="${avgProductsPerPackage!=null}" th:each="item:${avgProductsPerPackage}">
         <td  th:text="${item.servicePackage.name}"> Package</td>
         <td  th:text="${item.average} + '$'">Package</td>
     </tr>
@@ -75,7 +75,7 @@
         <td>Alert</td>
 
     </tr>
-    <tr th:each="user:${insolvents}">
+    <tr th:if="${insolvents!=null}" th:each="user:${insolvents}">
         <td th:text="${user.getUser().username}">Username</td>
         <td th:each="s:${suspendedOrders}" th:text="${s.order.getCreator().id==user.user_id} ? ${s.order.service} "/>
         <td th:each="a:${alertReport}" th:text="${a.getAlert().getUser().id==user.user_id} ? ${a.alert.lastRejection} "/>
@@ -84,7 +84,7 @@
 </table>
 
 <div>
-    <p th:text="'Best product: '+ ${bestProduct.product.name}"></p>
+    <p th:text="${bestProduct!=null} ? 'Best product: '+ ${bestProduct.product.name} : 'No best product found'"></p>
 </div>
 
 <form action="EmployeeHomePage" method="get">

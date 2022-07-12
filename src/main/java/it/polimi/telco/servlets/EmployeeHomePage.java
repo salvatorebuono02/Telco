@@ -50,6 +50,8 @@ public class EmployeeHomePage extends HttpServlet {
         ServletContext servletContext = getServletContext();
         final WebContext webContext = new WebContext(req, resp, servletContext, req.getLocale());
         if (employee != null) {
+            String[] types={"FixedInternetService","FixedPhoneService","MobileInternetService","MobilePhoneService"};
+            webContext.setVariable("servicestypes",types);
             webContext.setVariable("employee", employee);
             System.out.println("employee ok");
             webContext.setVariable("services", services);
