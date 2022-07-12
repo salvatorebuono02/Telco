@@ -137,13 +137,14 @@ create table salesPackage
 delimiter //
 create definer = current_user trigger addSales
     after insert on `order` for each row begin
-    declare x,y float;
+    declare x,y,z float;
     if NEW.confirmed=true then
-        select o.totalvalueservices,o.totalvalueproducts into x,y
+        select o.totalvalueservices,o.totalvalueproducts,v.numOfMonths into x,y,z
         from `order` o
+                join validityperiod v on o.validityId = v.id
         where o.serviceId=NEW.serviceId;
         update salesPackage s
-        set s.totalSalesWithProduct=s.totalSalesWithProduct+x+y, s.totalSalesWithoutProduct=s.totalSalesWithoutProduct+x
+        set s.totalSalesWithProduct=s.totalSalesWithProduct+x+(y*z), s.totalSalesWithoutProduct=s.totalSalesWithoutProduct+x
         where s.package_id in (select o.serviceId
                                from `order` o
                                where o.serviceId=NEW.serviceId);
@@ -155,13 +156,14 @@ delimiter //
 create definer =current_user trigger updateSales
     after update on `order` for each row
 begin
-    declare x,y float;
+    declare x,y,z float;
     if NEW.confirmed=true then
-        select o.totalvalueservices,o.totalvalueproducts into x,y
+        select o.totalvalueservices,o.totalvalueproducts,v.numOfMonths into x,y,z
         from `order` o
+                join validityperiod v on o.validityId = v.id
         where o.serviceId=NEW.serviceId;
         update salesPackage s
-        set s.totalSalesWithProduct=s.totalSalesWithProduct+x+y, s.totalSalesWithoutProduct=s.totalSalesWithoutProduct+x
+        set s.totalSalesWithProduct=s.totalSalesWithProduct+x+(y*z), s.totalSalesWithoutProduct=s.totalSalesWithoutProduct+x
         where s.package_id in (select o.serviceId
                                from `order` o
                                where o.serviceId=NEW.serviceId);
@@ -221,17 +223,24 @@ delimiter ;
 delimiter //
 create definer =current_user trigger addOptProduct
     after insert on `order` for each row begin
+    declare x int;
     if NEW.confirmed=true then
-        delete from totalnumberofoptionalproduct t
+       /* delete from totalnumberofoptionalproduct t
         where t.package_id in (select s.id
                                from service_package s
                                where s.id=NEW.serviceId);
-        insert into totalnumberofoptionalproduct
-        select o.serviceId, count(*)
-        from `order` as o
+        insert into totalnumberofoptionalproduct*/
+        select count(*) into x
+        from `order`  as o
+                 left outer join order_product op on o.id = op.order_id
+        where o.id=NEW.id;
+        update totalnumberofoptionalproduct t
+        set t.total=t.total+x
+        where t.package_id= NEW.serviceId;
+       /* from `order` as o
                  left outer join `order_product` op on o.id=op.order_id
-        where o.id=NEW.id
-        group by o.id;
+        where o.id=NEW.id;
+        group by o.id;*/
 
         delete from avgnumofproductsperpackage
         where package_id in (select s.id
@@ -250,17 +259,31 @@ delimiter ;
 delimiter //
 create definer = current_user trigger updateOptProduct
     after update on `order` for each row begin
+    declare x int;
     if NEW.confirmed=true then
-        delete from totalnumberofoptionalproduct t
+        /*delete from totalnumberofoptionalproduct t
         where t.package_id in (select s.id
                                from service_package s
                                where s.id=NEW.serviceId);
         insert into totalnumberofoptionalproduct
         select o.serviceId, count(*)
-        from `order` as o
+        from service_package as s
+                 join `order` o on s.id = o.serviceId
+                 join order_product op on o.id = op.order_id
+        where o.id=NEW.id
+        group by s.id;*/
+        select count(*) into x
+        from `order`  as o
+                 left outer join order_product op on o.id = op.order_id
+        where o.id=NEW.id;
+        update totalnumberofoptionalproduct t
+        set t.total=t.total+x
+        where t.package_id= NEW.serviceId;
+
+        /*from `order` as o
                  left outer join `order_product` op on o.id=op.order_id
         where o.id=NEW.id
-        group by o.id;
+        group by o.id;*/
 
         delete from avgnumofproductsperpackage
         where package_id in (select s.id
@@ -380,16 +403,19 @@ delimiter //
 create definer =current_user trigger addSalesForEachProduct
     after insert on `order` for each row begin
     declare y float;
-    declare id int;
+    declare z,id int;
     if NEW.confirmed=true then
-        select p.id,(p.monthly_fee*v.numOfMonths) into id,y
-        from product p left outer join order_product op on p.id = op.product_id
+        select p.id,p.monthly_fee,v.numOfMonths into id,y,z
+        from product p join order_product op on p.id = op.product_id
                        join `order` o on op.order_id = o.id
                        join validityperiod v on o.validityId = v.id
         where o.id=NEW.id;
+#         group by p.id;
         update salesForEachOptproduct s
-        set s.sales=s.sales+y
-        where s.optionalProduct_id = id;
+        set s.sales=s.sales+(y*z)
+        where s.optionalProduct_id = id and id in
+                                            (select op.product_id from order_product op
+                                             where op.order_id=NEW.id);
     end if;
 end //
 delimiter ;
@@ -398,16 +424,19 @@ delimiter //
 create definer =current_user trigger updateSalesForEachProduct
     after update on `order` for each row begin
     declare y float;
-    declare id int;
+    declare z,id int;
     if NEW.confirmed=true then
-        select p.id,(p.monthly_fee*v.numOfMonths) into id,y
+        select p.id,p.monthly_fee,v.numOfMonths into id,y,z
         from product p join order_product op on p.id = op.product_id
                        join `order` o on op.order_id = o.id
                        join validityperiod v on o.validityId = v.id
         where o.id=NEW.id;
+#         group by p.id;
         update salesForEachOptproduct s
-        set s.sales=s.sales+y
-        where s.optionalProduct_id = id;
+        set s.sales=s.sales+(y*z)
+        where s.optionalProduct_id = id and id in
+          (select op.product_id from order_product op
+                                where op.order_id=NEW.id);
     end if;
 end //
 delimiter ;
