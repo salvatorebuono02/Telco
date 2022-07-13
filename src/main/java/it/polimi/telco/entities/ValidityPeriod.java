@@ -15,11 +15,11 @@ public class ValidityPeriod implements Serializable {
     private int numOfMonths;
 
     //quando carico un validity period, non ho bisogno dei service packages associati a esso, quindi lo poniamo a lazy
-    @ManyToMany(mappedBy = "validityPeriods",fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "validityPeriods",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private List<ServicePackage> servicePackages;
 
     //TODO orphan removal?
-    @OneToMany(mappedBy="validityPeriod", cascade = CascadeType.ALL )
+    @OneToMany(mappedBy="validityPeriod",fetch = FetchType.LAZY,cascade = CascadeType.ALL )
     private List<Order> orders;
     @Override
     public String toString() {

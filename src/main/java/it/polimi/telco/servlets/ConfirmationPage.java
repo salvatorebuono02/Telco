@@ -84,81 +84,82 @@ public class ConfirmationPage extends HttpServlet {
         String path;
         int servicePackageId = Integer.parseInt(req.getParameter("servicePackageId"));
         List<Service> services = servicePackageBean.findServicesFromServicePackageId(servicePackageId);
-        Optional<ServicePackage> sp = servicePackageBean.findServicePackageById(servicePackageId);
-        if (sp.isPresent()) {
-            String[] optionalProducts = req.getParameterValues("optionalProducts");
-            int vdId = Integer.parseInt(req.getParameter("validityPeriod"));
-            String subscription = req.getParameter("validityStart");
-            //System.out.println(subscription);
-            LocalDate s = LocalDate.parse(subscription);
-            Date dc = new Date();
-            ArrayList<Product> productArrayList = new ArrayList<>();
-            Order order = new Order();
-            float totalValue = 0;
-            float servicesValue = 0;
-            float optionalValue = 0;
-            if (optionalProducts != null) {
-                for (String pId : optionalProducts) {
-                    Product product = servicePackageBean.findProductById(Integer.parseInt(pId));
-                    productArrayList.add(product);
-                    optionalValue = optionalValue + (product.getMonthly_fee());
-                }
-                order.setProducts(productArrayList);
+        ServicePackage sp = servicePackageBean.findServicePackageById(servicePackageId);
+        String[] optionalProducts = req.getParameterValues("optionalProducts");
+        int vdId = Integer.parseInt(req.getParameter("validityPeriod"));
+        String subscription = req.getParameter("validityStart");
+        //System.out.println(subscription);
+        LocalDate s = LocalDate.parse(subscription);
+        Date dc = new Date();
+        ArrayList<Product> productArrayList = new ArrayList<>();
+        Order order = new Order();
+        float totalValue = 0;
+        float packageValue = 0;
+        float optionalValue = 0;
+        ValidityPeriod validityPeriod = servicePackageBean.findValidityPeriodById(vdId);
+        if (optionalProducts != null) {
+            for (String pId : optionalProducts) {
+                Product product = servicePackageBean.findProductById(Integer.parseInt(pId));
+                productArrayList.add(product);
+                optionalValue = optionalValue + (product.getMonthly_fee()*validityPeriod.getNumOfMonths());
             }
-            ValidityPeriod validityPeriod = servicePackageBean.findValidityPeriodById(vdId);
-            LocalDate end = s.plusMonths(validityPeriod.getNumOfMonths());
-            servicesValue = servicesValue + (validityPeriod.getMonthly_fee() * validityPeriod.getNumOfMonths());
-            totalValue = optionalValue + servicesValue;
-            order.setDate_of_creation(dc);
-            order.setDate_of_subscription(s);
-            order.setDate_end_subscription(end);
-            order.setService(sp.get());
-            order.setValidityPeriod(validityPeriod);
-            order.setTotalValueOrder(totalValue);
-            order.setTotalvalueproducts(optionalValue);
-            order.setTotalvalueservices(servicesValue);
-            if (user != null) {
-                order.setCreator(user);
-                webContext.getSession().setAttribute("user", user);
-                webContext.setVariable("user", user);
-                String orderStatus;
-                int status = (int) (((Math.random() * 2)));
-                if (status == 1) {
-                    orderStatus = "orderOk";
-                    order.setConfirmed(true);
-                } else {
-                    orderStatus = "order not ok ESCI I SOLDI";
-                    order.setConfirmed(false);
-                    userBean.setInsolvent(user, true);
-                    userBean.setFailedPayments(user);
-                }
-                orderBean.CreateNewOrder(order);
-                if (user.getFailedPayments() == 3)
-                    userBean.createAlert(user, order);
-                else if (user.getFailedPayments() > 3) {
-                    userBean.updateAlert(userBean.findAlertByUser(user), order);
-
-                }
-                System.out.println("confirmationpage order:" + order);
-                webContext.setVariable("orderStatus", orderStatus);
-                webContext.setVariable("order", order);
-                webContext.setVariable("services", services);
-                path = "ConfirmationPage.html";
-                templateEngine.process(path, webContext, resp.getWriter());
-            } else {
-                //System.out.println("confPage 123");
-                orderBean.CreateNewOrder(order);
-//                    orderBean.setOrderInStandBy(order.getId());
-                req.getSession().setAttribute("orderId", order.getId());
-                System.out.println(req.getSession().getAttribute("orderId"));
-                path = "index.html";
-                templateEngine.process(path, webContext, resp.getWriter());
-            }
-
+            order.setProducts(productArrayList);
         }
+
+        LocalDate end = s.plusMonths(validityPeriod.getNumOfMonths());
+        packageValue = validityPeriod.getMonthly_fee() * validityPeriod.getNumOfMonths();
+        totalValue = optionalValue + packageValue;
+        order.setDate_of_creation(dc);
+        order.setDate_of_subscription(s);
+        order.setDate_end_subscription(end);
+        order.setService(sp);
+        order.setValidityPeriod(validityPeriod);
+        order.setTotalValueOrder(totalValue);
+        order.setTotalvalueproducts(optionalValue);
+        order.setTotalvalueservices(packageValue);
+        if (user != null) {
+            order.setCreator(user);
+            webContext.getSession().setAttribute("user", user);
+            webContext.setVariable("user", user);
+            String orderStatus;
+            int status = (int) (((Math.random() * 2)));
+            if (status == 1) {
+                orderStatus = "orderOk";
+                order.setConfirmed(true);
+            } else {
+                orderStatus = "order not ok ESCI I SOLDI";
+                order.setConfirmed(false);
+                userBean.setInsolvent(user, true);
+                userBean.setFailedPayments(user);
+            }
+            orderBean.CreateNewOrder(order);
+            if (user.getFailedPayments() == 3)
+                userBean.createAlert(user, order);
+            else if (user.getFailedPayments() > 3) {
+                userBean.updateAlert(userBean.findAlertByUser(user), order);
+
+            }
+            System.out.println("confirmationpage order:" + order);
+            webContext.setVariable("orderStatus", orderStatus);
+            webContext.setVariable("order", order);
+            webContext.setVariable("services", services);
+            path = "ConfirmationPage.html";
+            templateEngine.process(path, webContext, resp.getWriter());
+        } else {
+            //System.out.println("confPage 123");
+            orderBean.CreateNewOrder(order);
+//                    orderBean.setOrderInStandBy(order.getId());
+            req.getSession().setAttribute("orderId", order.getId());
+            System.out.println(req.getSession().getAttribute("orderId"));
+            path = "index.html";
+            templateEngine.process(path, webContext, resp.getWriter());
+        }
+
+
     }
 
-    private void orderAlreadyExisting(HttpServletRequest req, HttpServletResponse resp, User user, WebContext webContext) throws IOException {
+    private void orderAlreadyExisting(HttpServletRequest req, HttpServletResponse resp, User user,
+                                      WebContext webContext) throws IOException {
         String path;
         int orderId = Integer.parseInt((String) req.getSession().getAttribute("orderId"));
         Optional<Order> order = orderBean.getOrderFromId(orderId);
@@ -166,7 +167,8 @@ public class ConfirmationPage extends HttpServlet {
             //User user = userBean.findById(userId);
             int servicePackageId = order.get().getService().getId();
             //check se ordine in sessione è nuova prova di pagamento dell'utente
-            boolean orderRetry = (packageAlreadyOwnedByUser(user, order.get(), orderBean) && !order.get().isConfirmed());
+            boolean orderRetry =
+                    (packageAlreadyOwnedByUser(user, order.get(), orderBean) && !order.get().isConfirmed());
             if (!packageAlreadyOwnedByUser(user, order.get(), orderBean) || orderRetry) {
                 List<Service> services = servicePackageBean.findServicesFromServicePackageId(servicePackageId);
                 if (!packageAlreadyOwnedByUser(user, order.get(), orderBean))
@@ -204,7 +206,8 @@ public class ConfirmationPage extends HttpServlet {
                 orderBean.updateOrder(order.get());
                 if (user.getFailedPayments() >= 3 && !userBean.userAlertPresent(user))
                     userBean.createAlert(user, order.get());
-                    //TODO se un ordine viene cancellato dal db, bisogna controllare che venga totlto se nella lista degli ordini non pagati
+                    //TODO se un ordine viene cancellato dal db, bisogna controllare che venga totlto se nella lista
+                    // degli ordini non pagati
                 else if (userBean.userAlertPresent(user)) {
                     userBean.updateAlert(userBean.findAlertByUser(user), order.get());
                 }

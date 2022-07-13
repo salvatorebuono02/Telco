@@ -49,8 +49,8 @@ public class ShowServicePackage extends HttpServlet {
         ServletContext servletContext=getServletContext();
         final WebContext webContext=new WebContext(req,resp,servletContext,req.getLocale());
         int servicePackageId = Integer.parseInt(req.getParameter("servicePackageId"));
-        Optional<ServicePackage> sp= servicePackageBean.findServicePackageById(servicePackageId);
-        if (sp.isPresent()){
+        ServicePackage sp= servicePackageBean.findServicePackageById(servicePackageId);
+
             List<Service> services = servicePackageBean.findServicesFromServicePackageId(servicePackageId);
             String pattern = "MM/dd/yyyy HH:mm:ss";
             DateFormat df = new SimpleDateFormat(pattern);
@@ -68,8 +68,6 @@ public class ShowServicePackage extends HttpServlet {
 
             webContext.setVariable("date",date);
             String path="ShowServicePackage.html";
-            templateEngine.process(path,webContext,resp.getWriter());}
-        else throw new ServletException();
-
+            templateEngine.process(path,webContext,resp.getWriter());
     }
 }

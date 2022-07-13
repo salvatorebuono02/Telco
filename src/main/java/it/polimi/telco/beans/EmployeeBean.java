@@ -12,7 +12,6 @@ import javax.persistence.PersistenceException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Stateless
 public class EmployeeBean {
@@ -71,22 +70,7 @@ public class EmployeeBean {
 
 
     public List<Service> findAllServices() {
-        List<Service> serviceList = new ArrayList<Service>();
-        List<FixedPhoneService> fpserviceList = em.createNamedQuery("FixedPhoneService.findAll", FixedPhoneService.class).getResultList();
-        List<MobileInternetService> miserviceList = em.createNamedQuery("MobileInternetService.findAll", MobileInternetService.class).getResultList();
-        List<MobilePhoneService> mobilePhoneServiceList = em.createNamedQuery("MobilePhoneService.findAll", MobilePhoneService.class).getResultList();
-        List<FixedInternetService> fixedInternetServices = em.createNamedQuery("FixedInternetService.findAll", FixedInternetService.class).getResultList();
-
-        for (int i = 0; i < fpserviceList.size(); i++)
-            serviceList.add(fpserviceList.get(i));
-        for (int i = 0; i < miserviceList.size(); i++)
-            serviceList.add(miserviceList.get(i));
-        for (int i = 0; i < mobilePhoneServiceList.size(); i++)
-            serviceList.add(mobilePhoneServiceList.get(i));
-        for (int i = 0; i < fixedInternetServices.size(); i++)
-            serviceList.add(fixedInternetServices.get(i));
-
-        return serviceList;
+        return em.createNamedQuery("Service.findAll",Service.class).getResultList();
     }
 
     public List<Product> findAllProducts() {
@@ -97,45 +81,17 @@ public class EmployeeBean {
         return em.createNamedQuery("ValidityPeriod.findAll", ValidityPeriod.class).getResultList();
     }
 
-    public Service findServiceById(int serviceId,String type) {
-        if(Objects.equals(type, "FixedInternetService")){
-            List<FixedInternetService> fixedInternetServices =em.createNamedQuery("FixedInternetService.findAll", FixedInternetService.class).getResultList();
-            for (int i = 0; i < fixedInternetServices.size(); i++) {
-                if (fixedInternetServices.get(i).getId() == serviceId)
-                    return fixedInternetServices.get(i);
-            }
-        }
-        if(Objects.equals(type, "FixedPhoneService")){
-            List<FixedPhoneService> fixedPhoneServices = em.createNamedQuery("FixedPhoneService.findAll", FixedPhoneService.class).getResultList();
-            for (int i = 0; i < fixedPhoneServices.size(); i++) {
-                if (fixedPhoneServices.get(i).getId() == serviceId)
-                    return fixedPhoneServices.get(i);
-            }
-        }
-        if(Objects.equals(type, "MobileInternetService")){
-            List<MobileInternetService> mobileInternetServices =em.createNamedQuery("MobileInternetService.findAll", MobileInternetService.class).getResultList();
-            for (int i = 0; i < mobileInternetServices.size(); i++) {
-                if (mobileInternetServices.get(i).getId() == serviceId)
-                    return mobileInternetServices.get(i);
-            }
-        }
-        if(Objects.equals(type, "MobilePhoneService")){
-            List<MobilePhoneService> mobilePhoneServices =em.createNamedQuery("MobilePhoneService.findAll", MobilePhoneService.class).getResultList();
-            for (int i = 0; i < mobilePhoneServices.size(); i++) {
-                if (mobilePhoneServices.get(i).getId() == serviceId)
-                    return mobilePhoneServices.get(i);
-            }
-        }
-
-        return null;
+    public Service findServiceById(int serviceId) {
+        return em.createNamedQuery("Service.findFromId",Service.class).setParameter("id",serviceId).getSingleResult();
     }
 
 
-    public ServicePackage createServicePackage(String name, ArrayList<Product> products, ArrayList<ValidityPeriod> validityPeriods) throws SQLException{
+    public ServicePackage createServicePackage(String name, ArrayList<Product> products, ArrayList<ValidityPeriod> validityPeriods, ArrayList<Service> serviceArrayList) throws SQLException{
             ServicePackage servicePackage=new ServicePackage();
             servicePackage.setName(name);
             servicePackage.setProducts(products);
             servicePackage.setValidityPeriod(validityPeriods);
+            servicePackage.setServices(serviceArrayList);
             ServicePackage servicePackage1= em.merge(servicePackage);
             return servicePackage1;
     }
@@ -234,38 +190,14 @@ public class EmployeeBean {
     }
 
 
-    public void updateServices(ArrayList<Integer> fis,ArrayList<Integer> fps,ArrayList<Integer> mps,ArrayList<Integer> mis, ServicePackage servicePackage) {
-        /*List<Integer> servicesId=new ArrayList<>();
-        for (Service s:serviceArrayList){
-            servicesId.add(s.getId());
-        }*/
-        if (fps!=null){
-            for (int i:fps){
-                Service fps1=findServiceById(i,"FixedPhoneService");
-                fps1.setServicePackage(servicePackage);
-                Service fps2=em.merge(fps1);
-            }
+    public void updateServices(List<Integer> id, ServicePackage servicePackage) {
+
+        for (int i:id){
+            Service s1=findServiceById(i);
+            s1.setServicePackages(servicePackage);
+            Service s2=em.merge(s1);
         }
-        if (fis!=null){
-            for (int i:fis){
-                Service fis1=findServiceById(i,"FixedInternetService");
-                fis1.setServicePackage(servicePackage);
-                Service fis2=em.merge(fis1);
-            }
-        }
-        if (mis!=null){
-            for (int i:mis){
-                Service mis1 =findServiceById(i,"MobileInternetService");
-                mis1.setServicePackage(servicePackage);
-                Service mis2=em.merge(mis1);
-            }
-        }
-        if (mps!=null){
-            for (int i:mps){
-                Service mps1 =findServiceById(i,"MobilePhoneService");
-                mps1.setServicePackage(servicePackage);
-                Service fps2=em.merge(mps1);
-            }
-        }
+
+
     }
 }

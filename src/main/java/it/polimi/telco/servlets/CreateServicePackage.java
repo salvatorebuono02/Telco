@@ -47,45 +47,12 @@ public class CreateServicePackage extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String nameServPackage=req.getParameter("name");
-        String[] types= req.getParameterValues("servicestypes");
-        System.out.println(types);
-        ArrayList<Integer> fixedInternetservice=new ArrayList<>();
-        ArrayList<Integer> fixedPhoneservice=new ArrayList<>();
-        ArrayList<Integer> MobileInternetservice=new ArrayList<>();
-        ArrayList<Integer> MobilePhoneservice=new ArrayList<>();
+        String[] ids= req.getParameterValues("servicesId");
+        ArrayList<Integer> servicesId=new ArrayList<>();
 
-        for (String type:types){
-            if (req.getParameterValues(type)!=null){
-                for (String s:req.getParameterValues(type)){
-                    if (Objects.equals(type, "FixedPhoneService")){
-                        System.out.println("FPS:"+type);
-                        fixedPhoneservice.add(Integer.parseInt(s));
-                        System.out.println("FPS ARRAY :"+fixedPhoneservice);
-
-                    }
-                    else if (Objects.equals(type, "MobilePhoneService")){
-                        System.out.println("MPS:"+type);
-                        MobilePhoneservice.add(Integer.parseInt(s));
-                        System.out.println("MPS ARRAY :"+MobilePhoneservice);
-
-                    }
-                    else if (Objects.equals(type, "MobileInternetService")){
-                        System.out.println("MIS:"+type);
-                        MobileInternetservice.add(Integer.parseInt(s));
-                        System.out.println("MIS ARRAY :"+MobileInternetservice);
-
-                    }
-
-                    else if (Objects.equals(type, "FixedInternetService")){
-                        System.out.println("FIS:"+type);
-                        fixedInternetservice.add(Integer.parseInt(s));
-                        System.out.println("FIS ARRAY :"+fixedInternetservice);
-                    }
-                }
-            }
-
+        for (String i: ids){
+            servicesId.add(Integer.parseInt(i));
         }
-
 
         String[] optionalProducts=req.getParameterValues("products");
         System.out.println("optionalProducts chosen: " + optionalProducts);
@@ -96,7 +63,9 @@ public class CreateServicePackage extends HttpServlet {
         ArrayList<ValidityPeriod> validityPeriodArrayList=new ArrayList<>();
         ArrayList<Service> serviceArrayList=new ArrayList<>();
 
-
+        for (int i:servicesId){
+            serviceArrayList.add(employeeBean.findServiceById(i));
+        }
 
 
         if(optionalProducts!=null){
@@ -136,12 +105,13 @@ public class CreateServicePackage extends HttpServlet {
         else {
             ServicePackage pack = null;
             try {
-                pack= employeeBean.createServicePackage(nameServPackage,productArrayList,validityPeriodArrayList);
+                pack= employeeBean.createServicePackage(nameServPackage,productArrayList,validityPeriodArrayList,serviceArrayList);
             }
             catch (SQLException e){
                 e.printStackTrace();
             }                
-            employeeBean.updateServices(fixedInternetservice,fixedPhoneservice,MobilePhoneservice,MobileInternetservice, pack);
+            employeeBean.updateServices(servicesId, pack);
+
             path=getServletContext().getContextPath()+"/EmployeeHomePage";
             resp.sendRedirect(path);
         }

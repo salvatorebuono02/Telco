@@ -18,7 +18,7 @@ public class Product implements Serializable {
     private String name;
     private int monthly_fee;
 
-    @ManyToMany(mappedBy = "products",fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "products",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private List<ServicePackage> servicePackages;
 
     @ManyToMany(fetch = FetchType.EAGER,mappedBy = "products",cascade = CascadeType.ALL)

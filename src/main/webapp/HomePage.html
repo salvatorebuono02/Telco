@@ -18,6 +18,7 @@
                 <td th:if="${!item.isConfirmed()}"> <a th:href="@{/ConfirmationPage(orderId=${item.getId()})}"> <span
                         th:text="${item.getService().getName()}"></span></a></td>
                 <td th:if="${item.isConfirmed()}" th:text="${item.getService().name}">Package</td>
+                <td th:each="s:${item.getService().getServices()}" th:text="${s.getServiceType()}"></td>
                 <td th:text="${item.getDate_of_subscription()}">Package</td>
                 <td th:text="${item.getDate_end_subscription()}">Package</td>
                 <td th:text="${item.getProducts()}">Package</td>
@@ -36,7 +37,11 @@
             </tr>
                     <tr th:each="pack:${available}">
                         <td><a th:href="@{/ShowServicePackage(servicePackageId=${pack.getId()})}"> <span
-                                th:text="${pack.name}"></span></a></td>
+                                th:text="${pack.name}"></span></a>
+                        </td>
+                        <td th:each="service:${available}">
+                            <p th:each="s:${service.getServices()}" th:text="${s.getServiceType()}"></p>
+                        </td>
                         <td>
                             <p th:each="period:${pack.getValidityPeriods()}" th:text="${period.getNumOfMonths()}+'months at ' + ${period.getMonthly_fee()} + '$/month'"></p>
                         </td>

@@ -79,8 +79,7 @@ public class HomePage extends HttpServlet {
             //availableServicePackages
             List<Integer> tmp=findAvailable(user);
             for (Integer i:tmp){
-                if(servicePackageBean.findServicePackageById(i).isPresent())
-                    availableServicePackages.add(servicePackageBean.findServicePackageById(i).get());
+                availableServicePackages.add(servicePackageBean.findServicePackageById(i));
             }
 
 

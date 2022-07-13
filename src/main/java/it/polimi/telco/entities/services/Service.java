@@ -1,22 +1,37 @@
 package it.polimi.telco.entities.services;
 
-
 import it.polimi.telco.entities.ServicePackage;
 
 import javax.persistence.*;
 import java.io.Serializable;
-@MappedSuperclass
+import java.util.List;
+
+@Entity
+@Table(name = "service",schema = "telco")
+@NamedQuery(name = "Service.findAll",query ="select s from Service as s")
+@NamedQuery(name = "Service.findFromId",query = "select s from Service as s where s.id=:id")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "serviceType")
 public abstract class Service implements Serializable {
-
     private static final long serialVersionUID = 1L;
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
-    @JoinColumn(name = "id_servicePkg")
-    private ServicePackage servicePackage;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "service_servicePkg",joinColumns = {@JoinColumn(name = "service_id")},inverseJoinColumns = {@JoinColumn(name = "package_id")})
+    private List<ServicePackage> servicePackages;
+
+    private String serviceType;
+
+    public String getServiceType() {
+        return serviceType;
+    }
+
+    public void setServiceType(String serviceType) {
+        this.serviceType = serviceType;
+    }
 
     public int getId() {
         return id;
@@ -26,14 +41,17 @@ public abstract class Service implements Serializable {
         this.id = id;
     }
 
-    public ServicePackage getServicePackage() {
-        return servicePackage;
+    public List<ServicePackage> getServicePackages() {
+        return servicePackages;
     }
 
-    public void setServicePackage(ServicePackage servicePackage) {
-        this.servicePackage = servicePackage;
+    public void setServicePackages(ServicePackage servicePackage) {
+        this.servicePackages.add(servicePackage);
     }
-    public abstract String getTypeofService();
-    public abstract String getName();
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }
 

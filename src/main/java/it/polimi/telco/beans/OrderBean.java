@@ -37,7 +37,8 @@ public class OrderBean {
         }
         List<ServicePackage> servicePackages= new ArrayList<>();
         for (Order order: findFromCreator(user)){
-            servicePackages.add(order.getService());
+            if (!servicePackages.contains(order.getService()))
+                servicePackages.add(order.getService());
         }
         return servicePackages;
 
@@ -48,10 +49,10 @@ public class OrderBean {
             List<Product> products=o.getProducts();
             for (Product p:products){
                 p.setOrders(o);
-                Product p1=entityManager.merge(p);
             }
         }
-        Order order = entityManager.merge(o);
+        entityManager.persist(o);
+        entityManager.flush();
     }
 
     public void updateOrder(Order o){

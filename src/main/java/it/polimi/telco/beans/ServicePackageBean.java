@@ -49,39 +49,24 @@ public class ServicePackageBean {
         return null;
     }
 
-    public Optional<ServicePackage> findServicePackageById(int id){
-        return entityManager.createNamedQuery("ServicePackage.findId",ServicePackage.class).setParameter("id", id).getResultStream().findFirst();
+    public ServicePackage findServicePackageById(int id){
+        return entityManager.createNamedQuery("ServicePackage.findId",ServicePackage.class).setParameter("id", id).getSingleResult();
     }
 
-    private List<Service> findAllServices () {
-        List<Service> serviceList = new ArrayList<>();
-        List<FixedPhoneService> fpserviceList = entityManager.createNamedQuery("FixedPhoneService.findAll", FixedPhoneService.class).getResultList();
-        List<MobileInternetService> miserviceList = entityManager.createNamedQuery("MobileInternetService.findAll", MobileInternetService.class).getResultList();
-        List<MobilePhoneService> mobilePhoneServiceList = entityManager.createNamedQuery("MobilePhoneService.findAll", MobilePhoneService.class).getResultList();
-        List<FixedInternetService> fixedInternetServices = entityManager.createNamedQuery("FixedInternetService.findAll", FixedInternetService.class).getResultList();
-
-        serviceList.addAll(fpserviceList);
-        serviceList.addAll(miserviceList);
-        serviceList.addAll(mobilePhoneServiceList);
-        serviceList.addAll(fixedInternetServices);
-
-        return serviceList;
+    public List<Service> findAllServices() {
+        return entityManager.createNamedQuery("Service.findAll",Service.class).getResultList();
     }
 
     public List<Service> findServicesFromServicePackageId(int id){
-        List<Service> allServices= findAllServices();
-        System.out.println("allServices:" + allServices);
-        List<Service> servicesPackage = new ArrayList<>();
-        for(Service s : allServices){
-            System.out.println("service package connected to service"+ s.getTypeofService()+":"+s.getServicePackage());
-            if(s.getServicePackage()!=null && s.getServicePackage().getId()==id){
-                System.out.println("service has servicepackageid = " + id);
-                servicesPackage.add(s);
+        ServicePackage servicePackage=findServicePackageById(id);
+        List<Service> services=findAllServices();
+        List<Service> res=new ArrayList<>();
+        for (Service s:services){
+            if(s.getServicePackages().contains(servicePackage)){
+                res.add(s);
             }
-
         }
-        System.out.println("list of services of package:" + servicesPackage);
-        return servicesPackage;
+        return services;
     }
 
     public ValidityPeriod findValidityPeriodById(int vpId) {

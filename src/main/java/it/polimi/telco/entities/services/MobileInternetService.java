@@ -1,16 +1,16 @@
 package it.polimi.telco.entities.services;
 
 
-import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import it.polimi.telco.entities.ServicePackage;
+
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "mobileinternetservice",schema = "telco")
-@NamedQuery(name = "MobileInternetService.findAll",query = "select mis from MobileInternetService mis")
-public class MobileInternetService extends Service {
+@DiscriminatorValue("MobileInternetService")
+public class MobileInternetService extends Service{
     private int numOfGiga;
-    private int feeForExtraGiga;
+    private float feeForExtraGiga;
 
     public int getNumOfGiga() {
         return numOfGiga;
@@ -20,21 +20,16 @@ public class MobileInternetService extends Service {
         this.numOfGiga = numOfGiga;
     }
 
-    public int getFeeForExtraGiga() {
+    public float getFeeForExtraGiga() {
         return feeForExtraGiga;
     }
 
-    public void setFeeForExtraGiga(int feeForExtraGiga) {
+    public void setFeeForExtraGiga(float feeForExtraGiga) {
         this.feeForExtraGiga = feeForExtraGiga;
     }
 
     @Override
-    public String getTypeofService() {
-        return "MobileInternetService: "+numOfGiga+"Giga "+feeForExtraGiga+"Euro/extraGiga";
-    }
-
-    @Override
-    public String getName() {
-        return "MobileInternetService";
+    public String toString() {
+        return numOfGiga+" Gigas "+feeForExtraGiga+" $/Giga ";
     }
 }

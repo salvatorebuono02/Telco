@@ -36,7 +36,7 @@ public class Order implements Serializable {
     @JoinColumn(name="validityId")
     private ValidityPeriod validityPeriod;
 
-    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "order_product",joinColumns = {@JoinColumn(name = "order_id")},inverseJoinColumns = {@JoinColumn(name = "product_id")})
     private List<Product> products;
 

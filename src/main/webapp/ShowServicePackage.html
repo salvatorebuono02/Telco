@@ -8,12 +8,12 @@
 <body>
 <td th:text="${user!=null} ? ${user.username}: 'You are not logged in'" />
 
-<p th:text="${servicePackage.get().name}"></p>
+<p th:text="${servicePackage.name}"></p>
     <form class="buy" action="ConfirmationPage" method="post" >
     <table class="table">
         <tbody>
         <tr th:each="item:${services}">
-            <td th:text="${item.getTypeofService()}">Package</td>
+            <td th:text="${item.getServiceType()}+ ': '+ ${item.toString()}">Package</td>
             <!--<td th:text="'Months: ' + ${servicePackage.get().getValidityPeriod().getNumOfMonths()}">Package</td>
             <td th:text="'Price: ' + ${servicePackage.get().getValidityPeriod().getMonthly_fee()}">Package</td>
             --><!--                <td th:text="${p.getProducts()}">Package</td>-->
@@ -23,15 +23,15 @@
     <fieldset>
         <legend>Options</legend>
         <label>Choose if you want any optional product:</label>
-        <input type="checkbox" name="optionalProducts" th:each="op:${servicePackage.get().getProducts()}" th:value="${op.id}" th:text="${op.name}">
+        <input type="checkbox" name="optionalProducts" th:each="op:${servicePackage.getProducts()}" th:value="${op.id}" th:text="${op.name}">
         <br>
         <label>Choose one validityPeriod:</label>
-        <input type="checkbox" name="validityPeriod" th:each="period:${servicePackage.get().getValidityPeriods()}" th:value="${period.id}" th:text="${period.getNumOfMonths()}+'months at ' + ${period.getMonthly_fee()} + '$/month'" >
+        <input type="checkbox" name="validityPeriod" th:each="period:${servicePackage.getValidityPeriods()}" th:value="${period.id}" th:text="${period.getNumOfMonths()}+'months at ' + ${period.getMonthly_fee()} + '$/month'" >
         <br>
         <label for="start">Choose start date:</label><input type="date" id="start" name="validityStart" required>
     </fieldset>
     <br>
-    <button type="submit"  name="servicePackageId" th:value="${servicePackage.get().getId()}" > BUY </button>
+    <button type="submit"  name="servicePackageId" th:value="${servicePackage.getId()}" > BUY </button>
     </form>
 
 </body>

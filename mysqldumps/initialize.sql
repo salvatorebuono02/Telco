@@ -2,17 +2,11 @@ insert into telco.employee (id, username, password,name,lastname,email)
 values  (1, 'emp', 'emp','emp','emp','emp'),
         (2, 'employee', 'test','employee','employee','employee');
 
-insert into telco.fixedinternetservice (id, id_servicePkg, numOfGiga, feeForExtraGiga)
-values  (1, null, 5, 40),
-        (2, null, 4, 10);
-
-insert into telco.fixedphoneservice (id, id_servicePkg, numOfMinutes, numOfSms, feeExtraMin, feeExtraSms)
-values  (1, null, 1500, 100, 0, 0),
-        (2, null, 5000, 500, 1, 2);
-
-insert into telco.mobileinternetservice (id, id_servicePkg, numOfGiga, feeForExtraGiga)
-values  (1, null, 20, 2),
-        (2, null, 50, 3);
+insert into telco.service (serviceType,id,numOfGiga,feeForExtraGiga,numOfSms,numOfMinutes,feeExtraMin,feeExtraSms)
+values ('FixedInternetService',1,2,3.0,null,null,null,null),
+       ('FixedInternetService',2,5,2.5,null,null,null,null),
+       ('MobilePhoneService',3,null,null,4,4,5.0,6.0),
+       ('MobileInternetService',4,4,1.2,null,null,null,null);
 
 insert into telco.product (id, name, monthly_fee)
 values  (1, 'iphone 13', 15),
@@ -68,3 +62,12 @@ values  (1001,2),
         (1005,3),
         (1005,1),
         (1006,3);
+
+insert into telco.service_servicepkg(service_id, package_id)
+values (1,1002),
+       (1,1004),
+       (2,1001),
+       (3,1003),
+       (3,1001),
+       (4,1005),
+       (3,1006);

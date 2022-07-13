@@ -1,12 +1,10 @@
 package it.polimi.telco.entities;
 
-import it.polimi.telco.entities.services.FixedInternetService;
-import it.polimi.telco.entities.services.FixedPhoneService;
-import it.polimi.telco.entities.services.MobileInternetService;
-import it.polimi.telco.entities.services.MobilePhoneService;
+import it.polimi.telco.entities.services.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,11 +21,15 @@ public class ServicePackage implements Serializable {
     @OneToMany(mappedBy ="service",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Order> orders;
 
+    @ManyToMany(fetch = FetchType.EAGER,mappedBy = "servicePackages",cascade = CascadeType.ALL)
+    private List<Service> services;
+
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "service_package_product", joinColumns = {@JoinColumn(name = "SERVICEPACKAGES_ID")}, inverseJoinColumns = {@JoinColumn(name = "PRODUCTS_ID")})
     private List<Product> products;
 
-    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "service_package_validity_periods", joinColumns = {@JoinColumn(name = "servicePackage_id")}, inverseJoinColumns = {@JoinColumn(name = "validityPeriod_id")})
     private List<ValidityPeriod> validityPeriods;
 
@@ -68,5 +70,13 @@ public class ServicePackage implements Serializable {
 
     public void setOrders(List<Order> orders) {
         this.orders = orders;
+    }
+
+    public void setServices(ArrayList<Service> serviceArrayList) {
+        this.services=serviceArrayList;
+    }
+
+    public List<Service> getServices() {
+        return services;
     }
 }

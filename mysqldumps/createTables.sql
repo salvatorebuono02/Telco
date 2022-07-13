@@ -57,67 +57,33 @@ create table if not exists service_package
     name varchar(50) null
 );
 
-drop table if exists fixedinternetservice;
-create table if not exists fixedinternetservice
+drop table if exists service;
+create table if not exists service
 (
+    serviceType     varchar(45) not null,
     id              int auto_increment
         primary key,
-    id_servicePkg   int null,
-    numOfGiga       int not null,
-    feeForExtraGiga int not null,
-    constraint fixedinternetservice_ibfk_1
-        foreign key (id_servicePkg) references service_package (id)
+    numofGiga       int         null,
+    feeForExtraGiga float       null,
+    numOfSms        int         null,
+    numOfMinutes    int         null,
+    feeExtraMin     float       null,
+    feeExtraSms     float       null
 );
 
-create index id_servicePkg
-    on fixedinternetservice (id_servicePkg);
 
-
-drop table if exists fixedphoneservice;
-create table if not exists fixedphoneservice
+drop table if exists service_servicepkg;
+create table if not exists service_servicepkg
 (
-    id            int auto_increment
-        primary key,
-    id_servicePkg int null,
-    numOfMinutes  int not null,
-    numOfSms      int not null,
-    feeExtraMin   int not null,
-    feeExtraSms   int not null,
-    constraint fixedphoneservice_ibfk_1
-        foreign key (id_servicePkg) references service_package (id)
+    service_id int null,
+    package_id int null,
+    constraint service_servicepkg_service_id_fk
+        foreign key (service_id) references service (id),
+    constraint service_servicepkg_service_package_id_fk
+        foreign key (package_id) references service_package (id)
 );
 
-create index id_servicePkg
-    on fixedphoneservice (id_servicePkg);
 
-
-drop table if exists mobileinternetservice;
-create table if not exists mobileinternetservice
-(
-    id              int auto_increment
-        primary key,
-    id_servicePkg   int null,
-    numOfGiga       int not null,
-    feeForExtraGiga int not null,
-    constraint mobileinternetservice_ibfk_1
-        foreign key (id_servicePkg) references service_package (id)
-);
-
-create index id_servicePkg
-    on mobileinternetservice (id_servicePkg);
-
-drop table if exists mobilephoneservice;
-create table if not exists mobilephoneservice
-(
-    id            int auto_increment
-        primary key,
-    id_servicePkg int null,
-    constraint mobilephoneservice_ibfk_1
-        foreign key (id_servicePkg) references service_package (id)
-);
-
-create index id_servicePkg
-    on mobilephoneservice (id_servicePkg);
 
 drop table if exists alert;
 create table if not exists alert
@@ -183,6 +149,7 @@ create table if not exists service_package_validity_periods
     constraint service_package_validity_periods_validityperiod_id_fk
         foreign key (validityPeriod_id) references validityperiod (id)
 );
+
 
 drop table if exists service_package_product;
 create table if not exists service_package_product

@@ -11,7 +11,7 @@ drop trigger if exists updatePurchaseToPackageAndValPeriod;
 drop table if exists salesPackage;
 drop trigger if exists addSales;
 drop trigger if exists updateSales;
-# drop trigger if exists createUpdateSales;
+drop trigger if exists createUpdateSales;
 drop trigger if exists createSales;
 
 drop table if exists avgnumofproductsperpackage;
