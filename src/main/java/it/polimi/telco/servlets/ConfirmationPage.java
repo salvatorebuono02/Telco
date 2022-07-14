@@ -93,6 +93,7 @@ public class ConfirmationPage extends HttpServlet {
         Date dc = new Date();
         ArrayList<Product> productArrayList = new ArrayList<>();
         Order order = new Order();
+        /*orderBean.getOrderManaged(order);*/
         float totalValue = 0;
         float packageValue = 0;
         float optionalValue = 0;
@@ -103,36 +104,31 @@ public class ConfirmationPage extends HttpServlet {
                 productArrayList.add(product);
                 optionalValue = optionalValue + (product.getMonthly_fee()*validityPeriod.getNumOfMonths());
             }
-            order.setProducts(productArrayList);
+
         }
 
         LocalDate end = s.plusMonths(validityPeriod.getNumOfMonths());
         packageValue = validityPeriod.getMonthly_fee() * validityPeriod.getNumOfMonths();
         totalValue = optionalValue + packageValue;
-        order.setDate_of_creation(dc);
-        order.setDate_of_subscription(s);
-        order.setDate_end_subscription(end);
-        order.setService(sp);
-        order.setValidityPeriod(validityPeriod);
-        order.setTotalValueOrder(totalValue);
-        order.setTotalvalueproducts(optionalValue);
-        order.setTotalvalueservices(packageValue);
+
+
         if (user != null) {
-            order.setCreator(user);
+
             webContext.getSession().setAttribute("user", user);
             webContext.setVariable("user", user);
             String orderStatus;
             int status = (int) (((Math.random() * 2)));
+            Boolean confirmed;
             if (status == 1) {
                 orderStatus = "orderOk";
-                order.setConfirmed(true);
+                confirmed=true;
             } else {
                 orderStatus = "order not ok ESCI I SOLDI";
-                order.setConfirmed(false);
+                confirmed=false;
                 userBean.setInsolvent(user, true);
                 userBean.setFailedPayments(user);
             }
-            orderBean.CreateNewOrder(order);
+            orderBean.CreateNewOrder(productArrayList,dc,s,end,sp,validityPeriod,totalValue,optionalValue,packageValue,user,confirmed);
             if (user.getFailedPayments() == 3)
                 userBean.createAlert(user, order);
             else if (user.getFailedPayments() > 3) {
@@ -147,7 +143,7 @@ public class ConfirmationPage extends HttpServlet {
             templateEngine.process(path, webContext, resp.getWriter());
         } else {
             //System.out.println("confPage 123");
-            orderBean.CreateNewOrder(order);
+            orderBean.CreateNewOrder(productArrayList,dc,s,end,sp,validityPeriod,totalValue,optionalValue,packageValue,null,null);
 //                    orderBean.setOrderInStandBy(order.getId());
             req.getSession().setAttribute("orderId", order.getId());
             System.out.println(req.getSession().getAttribute("orderId"));

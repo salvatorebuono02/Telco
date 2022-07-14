@@ -88,12 +88,14 @@ public class EmployeeBean {
 
     public ServicePackage createServicePackage(String name, ArrayList<Product> products, ArrayList<ValidityPeriod> validityPeriods, ArrayList<Service> serviceArrayList) throws SQLException{
             ServicePackage servicePackage=new ServicePackage();
+            em.persist(servicePackage);
+            em.flush();
             servicePackage.setName(name);
             servicePackage.setProducts(products);
             servicePackage.setValidityPeriod(validityPeriods);
             servicePackage.setServices(serviceArrayList);
-            ServicePackage servicePackage1= em.merge(servicePackage);
-            return servicePackage1;
+
+            return servicePackage;
     }
 
     public List<AlertReport> findAllAlertReport(){
@@ -199,5 +201,10 @@ public class EmployeeBean {
         }
 
 
+    }
+
+    public Service getManagedService(Service s) {
+        Service s1=em.merge(s);
+        return s1;
     }
 }

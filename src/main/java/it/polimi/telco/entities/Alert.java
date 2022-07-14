@@ -23,9 +23,12 @@ public class Alert implements Serializable {
     @JoinColumn(name = "userId")
     private User user;
 
+    @Column(name = "userName",length = 45)
     private String userName;
 
+    @Column(name = "userEmail",length = 45)
     private String userEmail;
+
 
     private float amount;
 

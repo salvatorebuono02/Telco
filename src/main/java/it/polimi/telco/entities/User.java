@@ -16,10 +16,18 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "firstname",length = 45)
     private String firstname;
+    @Column(name = "lastname",length = 45)
+
     private String lastname;
+    @Column(name = "email",length = 45)
     private String email;
+    @Column(name = "username",length = 45)
+
     private String username;
+    @Column(name = "password",length = 45)
+
     private String password;
 
     private boolean insolvent=false;

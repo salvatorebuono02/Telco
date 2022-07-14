@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +44,20 @@ public class Order implements Serializable {
     private float totalValueOrder;
 
     private float totalvalueservices;
+
+    public Order(ArrayList<Product> products, Date dc, LocalDate s, LocalDate end, ServicePackage servicePackage, ValidityPeriod validityPeriod1, float totalValue, float optionalValue, float packageValue, User user1, Boolean confirmed) {
+        this.products=products;
+        this.date_of_creation=dc;
+        this.date_of_subscription=s;
+        this.date_end_subscription=end;
+        this.service=servicePackage;
+        this.validityPeriod=validityPeriod1;
+        this.totalValueOrder=totalValue;
+        this.totalvalueproducts=optionalValue;
+        this.totalvalueservices=packageValue;
+        this.creator=user1;
+        this.confirmed=confirmed;
+    }
 
     public float getTotalvalueservices() {
         return totalvalueservices;

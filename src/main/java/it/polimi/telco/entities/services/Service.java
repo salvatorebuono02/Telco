@@ -23,6 +23,7 @@ public abstract class Service implements Serializable {
     @JoinTable(name = "service_servicePkg",joinColumns = {@JoinColumn(name = "service_id")},inverseJoinColumns = {@JoinColumn(name = "package_id")})
     private List<ServicePackage> servicePackages;
 
+    @Column(name = "serviceType",length = 45)
     private String serviceType;
 
     public String getServiceType() {

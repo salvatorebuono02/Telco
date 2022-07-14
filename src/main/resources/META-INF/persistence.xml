@@ -5,6 +5,7 @@
              version="2.2">
     <persistence-unit name="default">
         <class>it.polimi.telco.entities.User</class>
+        <class>it.polimi.telco.entities.services.Service</class>
         <class>it.polimi.telco.entities.services.FixedInternetService</class>
         <class>it.polimi.telco.entities.services.FixedPhoneService</class>
         <class>it.polimi.telco.entities.services.MobileInternetService</class>
@@ -16,6 +17,8 @@
             <property name="eclipselink.jdbc.url"
                       value="jdbc:mysql://localhost:3306/telco"/>
             <property name="eclipselink.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+
         </properties>
     </persistence-unit>
 </persistence>

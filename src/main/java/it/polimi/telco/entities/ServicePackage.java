@@ -16,6 +16,7 @@ public class ServicePackage implements Serializable {
     @Id
     @GeneratedValue
     private int id;
+    @Column(name = "name",length = 45)
     private String name;
 
     @OneToMany(mappedBy ="service",orphanRemoval = true, cascade = CascadeType.ALL)

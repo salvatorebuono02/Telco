@@ -49,7 +49,6 @@ public class CreateServicePackage extends HttpServlet {
         String nameServPackage=req.getParameter("name");
         String[] ids= req.getParameterValues("servicesId");
         ArrayList<Integer> servicesId=new ArrayList<>();
-
         for (String i: ids){
             servicesId.add(Integer.parseInt(i));
         }
@@ -104,8 +103,13 @@ public class CreateServicePackage extends HttpServlet {
         }
         else {
             ServicePackage pack = null;
+            ArrayList<Service> managedService=new ArrayList<>();
+            for (Service s:serviceArrayList){
+                Service s1=employeeBean.getManagedService(s);
+                managedService.add(s1);
+            }
             try {
-                pack= employeeBean.createServicePackage(nameServPackage,productArrayList,validityPeriodArrayList,serviceArrayList);
+                pack= employeeBean.createServicePackage(nameServPackage,productArrayList,validityPeriodArrayList,managedService);
             }
             catch (SQLException e){
                 e.printStackTrace();

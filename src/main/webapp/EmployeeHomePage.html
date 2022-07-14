@@ -22,7 +22,7 @@
 <!--
             <input type="checkbox" name="services" th:each="s:${services}" th:value="${s.id}" th:text="${s.getTypeofService()}">
 -->
-            <input type="checkbox" th:name="${stype}" th:each="s:${services}" th:if="${s.getServiceType()==stype}" th:text="${s.getServiceType()}+':'+${s.toString()}" th:value="${s.id}">
+            <input type="checkbox" name="servicesId" th:each="s:${services}" th:if="${s.getServiceType()==stype}" th:text="${s.getServiceType()}+':'+${s.toString()}" th:value="${s.id}">
         </fieldset>
     </fieldset>
     <fieldset>
