@@ -227,8 +227,7 @@ create definer =current_user trigger updateOptProduct
         insert into optionalProductsPerOrder(order_id, total)
             ( select p.orderId, COUNT(p.id)
               from product p
-              where p.orderId is not null and p.orderId=NEW.orderId
-              group by p.orderId
+              where p.orderId is not null and p.id=NEW.id
             );
 
         update totalnumberofoptionalproduct t, optionalProductsPerOrder op
@@ -351,9 +350,9 @@ create definer =current_user trigger addSalesForEachProduct
     declare z,id int;
     if NEW.orderId is not null and NEW.orderId in (select o.id from `order` o where o.confirmed= true) then
         select p.id,p.monthly_fee,v.numOfMonths into id,y,z
-        from product p right outer join `order` o on p.orderId = o.id
-                       left outer join validityperiod v on o.validityId = v.id
-        where o.id=NEW.orderId;
+        from product p join `order` o on p.orderId = o.id
+                       join validityperiod v on o.validityId = v.id
+        where o.id=NEW.orderId and p.id=NEW.id;
 #         group by p.id;
         update salesForEachOptproduct s
         set s.sales=s.sales+(y*z)
