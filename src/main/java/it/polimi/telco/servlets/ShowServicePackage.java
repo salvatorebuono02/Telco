@@ -2,6 +2,7 @@ package it.polimi.telco.servlets;
 
 import it.polimi.telco.beans.ServicePackageBean;
 import it.polimi.telco.beans.UserBean;
+import it.polimi.telco.entities.Product;
 import it.polimi.telco.entities.ServicePackage;
 import it.polimi.telco.entities.User;
 import it.polimi.telco.entities.services.Service;
@@ -21,10 +22,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @WebServlet("/ShowServicePackage")
 public class ShowServicePackage extends HttpServlet {
@@ -50,7 +48,8 @@ public class ShowServicePackage extends HttpServlet {
         final WebContext webContext=new WebContext(req,resp,servletContext,req.getLocale());
         int servicePackageId = Integer.parseInt(req.getParameter("servicePackageId"));
         ServicePackage sp= servicePackageBean.findServicePackageById(servicePackageId);
-
+        List<Product> products= servicePackageBean.findProductsType(sp);
+        System.out.println("showService products:" + products);
             List<Service> services = servicePackageBean.findServicesFromServicePackageId(servicePackageId);
             String pattern = "MM/dd/yyyy HH:mm:ss";
             DateFormat df = new SimpleDateFormat(pattern);
@@ -63,6 +62,7 @@ public class ShowServicePackage extends HttpServlet {
                webContext.setVariable("user", user);
            }
             webContext.setVariable("services",services);
+            webContext.setVariable("products", products);
             webContext.setVariable("servicePackage",sp);
             //OK System.out.println("sp id"+sp.get().getId());
 

@@ -27,7 +27,7 @@ public class ServicePackage implements Serializable {
 
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "service_package_product", joinColumns = {@JoinColumn(name = "SERVICEPACKAGES_ID")}, inverseJoinColumns = {@JoinColumn(name = "PRODUCTS_ID")})
+    @JoinTable(name = "service_package_product", joinColumns = {@JoinColumn(name = "servicePackage_id")}, inverseJoinColumns = {@JoinColumn(name = "product_id")})
     private List<Product> products;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -80,4 +80,6 @@ public class ServicePackage implements Serializable {
     public List<Service> getServices() {
         return services;
     }
+
+
 }

@@ -5,7 +5,6 @@ import it.polimi.telco.entities.*;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -76,7 +75,7 @@ public class OrderBean {
         entityManager.flush();
     }
 
-    public void CreateNewOrder(ArrayList<Product> productArrayList, Date dc, LocalDate s, LocalDate end, ServicePackage sp, ValidityPeriod validityPeriod, float totalValue, float optionalValue, float packageValue, User user, Boolean confirmed){
+    public Order CreateNewOrder(List<Product> productArrayList, Date dc, LocalDate s, LocalDate end, ServicePackage sp, ValidityPeriod validityPeriod, float totalValue, float optionalValue, float packageValue, User user, Boolean confirmed){
         ArrayList<Product> products=new ArrayList<>();
         for(Product p: productArrayList){
             products.add(entityManager.find(Product.class,p.getId()));
@@ -87,12 +86,27 @@ public class OrderBean {
         if(user!=null){
             user1=entityManager.find(User.class,user.getId());
         }
-        Order order=new Order(products,dc,s,end,servicePackage,validityPeriod1,totalValue,optionalValue,packageValue,user1,confirmed);
+        Order order=new Order(/*products,*/dc,s,end,servicePackage,validityPeriod1,totalValue,optionalValue,packageValue,user1,confirmed);
         for (Product p:products){
-            entityManager.persist(p);
+            p.setOrder(order);
+            entityManager.merge(p);
         }
-
-
+        entityManager.persist(servicePackage);
+        entityManager.flush();
+        return order;
     }
 
+
+    public List<Product> findProductsFromOrder(Order order) {
+        return entityManager.createNamedQuery("Product.findByOrder", Product.class).setParameter("order",order).getResultList();
+    }
+
+    public void updateProductsOrder(Order order) {
+        List<Product> products=findProductsFromOrder(order);
+
+        for (Product p:products){
+            p.setOrder(order);
+            entityManager.merge(p);
+        }
+    }
 }

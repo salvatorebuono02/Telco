@@ -34,6 +34,16 @@ public class Alert implements Serializable {
 
     private Date lastRejection;
 
+    public Alert(User user, float totalValueOrder, Date date_of_creation) {
+        this.user=user;
+        this.lastRejection=date_of_creation;
+        this.amount=totalValueOrder;
+    }
+
+    public Alert() {
+
+    }
+
     public int getId() {
         return id;
     }

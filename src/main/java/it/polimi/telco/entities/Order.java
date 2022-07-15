@@ -37,16 +37,15 @@ public class Order implements Serializable {
     @JoinColumn(name="validityId")
     private ValidityPeriod validityPeriod;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "order_product",joinColumns = {@JoinColumn(name = "order_id")},inverseJoinColumns = {@JoinColumn(name = "product_id")})
+    @OneToMany(mappedBy ="order",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Product> products;
 
     private float totalValueOrder;
 
     private float totalvalueservices;
 
-    public Order(ArrayList<Product> products, Date dc, LocalDate s, LocalDate end, ServicePackage servicePackage, ValidityPeriod validityPeriod1, float totalValue, float optionalValue, float packageValue, User user1, Boolean confirmed) {
-        this.products=products;
+    public Order(/*ArrayList<Product> products,*/ Date dc, LocalDate s, LocalDate end, ServicePackage servicePackage, ValidityPeriod validityPeriod1, float totalValue, float optionalValue, float packageValue, User user1, Boolean confirmed) {
+//        this.products=products;
         this.date_of_creation=dc;
         this.date_of_subscription=s;
         this.date_end_subscription=end;

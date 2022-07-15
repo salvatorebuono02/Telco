@@ -4,6 +4,7 @@ import it.polimi.telco.beans.OrderBean;
 import it.polimi.telco.beans.ServicePackageBean;
 import it.polimi.telco.beans.UserBean;
 import it.polimi.telco.entities.Order;
+import it.polimi.telco.entities.Product;
 import it.polimi.telco.entities.ServicePackage;
 import it.polimi.telco.entities.User;
 import org.thymeleaf.TemplateEngine;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @WebServlet("/HomePage")
 public class HomePage extends HttpServlet {
@@ -50,58 +52,38 @@ public class HomePage extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User user=(User) req.getSession().getAttribute("user");
-        List<Order> userOrders =null;
-        List<Integer> ordersFailed= null;
+        List<Order> userOrders;
         List<ServicePackage> availableServicePackages=new ArrayList<>();
+        List<Product> allProdsWithorder= new ArrayList<>();
+        ServletContext servletContext=getServletContext();
+        final WebContext webContext=new WebContext(req,resp,servletContext,req.getLocale());
         if (user!=null){
-            //user=(User) req.getSession().getAttribute("user");
-            //user = userBean.findById(user);
-            ServletContext servletContext=getServletContext();
-            final WebContext webContext=new WebContext(req,resp,servletContext,req.getLocale());
             //if(user!=null){
                 webContext.getSession().setAttribute("user",user);
                 webContext.setVariable("user", user);
                 userOrders =orderBean.findFromCreator(user);
                 System.out.println(userOrders);
                 if (!userOrders.isEmpty()){
+                    for(Product p: servicePackageBean.findAllProducts())
+                        if(p.getOrder()!=null)
+                            allProdsWithorder.add(p);
                     webContext.setVariable("active", userOrders);
-                    /*for(Order o:userOrders)
-                        if(!o.isConfirmed()){
-                           ordersFailed= new ArrayList<>();
-                           ordersFailed.add(o.getId());
-                        }*/
+                    webContext.setVariable("products", allProdsWithorder);
                 }
-            webContext.setVariable("ordersFailed", ordersFailed);
-
-            //}
-
-            //activeServicePackages
-            //availableServicePackages
             List<Integer> tmp=findAvailable(user);
             for (Integer i:tmp){
                 availableServicePackages.add(servicePackageBean.findServicePackageById(i));
             }
-
-
-            if (!availableServicePackages.isEmpty())
+            if (!availableServicePackages.isEmpty()){
                 webContext.setVariable("available",availableServicePackages);
-
+            }
             String path="HomePage.html";
             templateEngine.process(path,webContext,resp.getWriter());
         }
         else {
-            ServletContext servletContext=getServletContext();
-            final WebContext webContext=new WebContext(req,resp,servletContext,req.getLocale());
             //availableServicePackages when visit user are always all packages
             availableServicePackages.addAll(servicePackageBean.findAllServicePackages());
             webContext.setVariable("available",availableServicePackages);
-            /* List<Integer> tmp=findAvailable(user);
-            for (Integer i:tmp){
-                if(servicePackageBean.findServicePackageById(i).isPresent())
-                    availableServicePackages.add(servicePackageBean.findServicePackageById(i).get());
-            }
-            if (!availableServicePackages.isEmpty() )
-                webContext.setVariable("available",availableServicePackages);*/
             String path="HomePage.html";
             templateEngine.process(path,webContext,resp.getWriter());
         }
@@ -125,13 +107,7 @@ public class HomePage extends HttpServlet {
             userSpId.add(s.getId());
         }
         System.out.println("userpackageid: "+userSpId);
-        /*for (ServicePackage sp:spIds){
-            if (!userSp.contains(sp)){
-                System.out.println("sono dentro if: pacchetto è available");
-                available.add(sp);
-            }
 
-        }*/
         for (Integer i:spsId){
             if(!userSpId.contains(i)){
                 available.add(i);

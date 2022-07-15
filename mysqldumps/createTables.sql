@@ -30,15 +30,6 @@ create table if not exists employee
         unique (username)
 );
 
-drop table if exists product;
-create table if not exists product
-(
-    id          int auto_increment
-        primary key,
-    name        varchar(50) null,
-    monthly_fee int         not null
-);
-
 drop table if exists validityperiod;
 create table if not exists validityperiod
 (
@@ -127,7 +118,21 @@ create table if not exists `order`
 create index orderBy_id
     on `order` (creator);
 
-drop table if exists order_product;
+
+
+drop table if exists product;
+create table product
+(
+    id          int auto_increment
+        primary key,
+    name        varchar(50) null,
+    monthly_fee int         not null,
+    orderId     int         null,
+    constraint product_order_id_fk
+        foreign key (orderId) references `order` (id)
+);
+
+/*drop table if exists order_product;
 create table if not exists order_product
 (
     product_id int null,
@@ -136,7 +141,7 @@ create table if not exists order_product
         foreign key (order_id) references `order` (id),
     constraint order_product_product_id_fk
         foreign key (product_id) references product (id)
-);
+);*/
 
 
 drop table if exists service_package_validity_periods;
@@ -154,19 +159,19 @@ create table if not exists service_package_validity_periods
 drop table if exists service_package_product;
 create table if not exists service_package_product
 (
-    SERVICEPACKAGES_ID int null,
-    PRODUCTS_ID        int null,
+    servicePackage_id int null,
+    product_id       int null,
     constraint service_package_product_product_id_fk
-    foreign key (PRODUCTS_ID) references product (id),
+    foreign key (product_id) references product (id),
     constraint service_package_product_service_package_id_fk
-    foreign key (SERVICEPACKAGES_ID) references service_package (id)
+    foreign key (servicePackage_id) references service_package (id)
     );
 
 create index I_SRVCDCT_ELEMENT
-    on service_package_product (PRODUCTS_ID);
+    on service_package_product (product_id);
 
 create index I_SRVCDCT_SERVICEPACKAGES_ID
-    on service_package_product (SERVICEPACKAGES_ID);
+    on service_package_product (servicePackage_id);
 
 
 

@@ -54,7 +54,6 @@ public class CreateServicePackage extends HttpServlet {
         }
 
         String[] optionalProducts=req.getParameterValues("products");
-        System.out.println("optionalProducts chosen: " + optionalProducts);
         String[] validityPeriods= req.getParameterValues("validityPeriods");
 
         Employee employee = (Employee) req.getSession().getAttribute("employee");

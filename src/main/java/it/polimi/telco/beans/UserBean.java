@@ -72,13 +72,10 @@ public class UserBean {
     }
 
     public void createAlert(User user, Order order){
-        Alert alert =new Alert();
-        alert.setUser(user);
-        alert.setAmount(order.getTotalValueOrder());
-        alert.setLastRejection(order.getDate_of_creation());
+        Alert alert =new Alert(user,order.getTotalValueOrder(),order.getDate_of_creation());
+        user.setAlert(alert);
         try{
-            em.persist(alert);
-            em.flush();
+            em.merge(user);
         } catch (ConstraintViolationException ignored) {}
     }
 

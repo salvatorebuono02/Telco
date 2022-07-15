@@ -87,4 +87,28 @@ public class ServicePackageBean {
         return null;
     }
 
+    public List<Product> findProductsType(ServicePackage servicePackage) {
+        List<Product> prodTypes= servicePackage.getProducts();
+        List<Product> allProds = findAllProducts();
+        for(Product p1:prodTypes) {
+            System.out.println("findproductstype spBean, inside for: " + p1);
+            int flag = 0;
+            for (Product p : allProds) {
+                if (p.getName().equals(p1.getName()) && p.getOrder() == null){
+                    flag = 1;
+                    System.out.println("found product free");
+                }
+
+            }
+            if(flag==0)
+                prodTypes.remove(p1);
+        }
+
+        return prodTypes;
+    }
+
+    public List<Product> findAllProducts() {
+        return entityManager.createNamedQuery("Products.findAll", Product.class).getResultList();
+    }
+
 }

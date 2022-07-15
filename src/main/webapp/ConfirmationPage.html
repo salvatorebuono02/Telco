@@ -22,8 +22,8 @@
     </tr>
     <tr>
 
-        <td th:each="s:${services}" th:text="${s.getServiceType()}+':'+${s.toString()}" th:value="${s.id}"></td>
-        <td th:text="${order.getProducts()}">Package</td>
+        <td class="servicesList"><p th:each="s:${services}" th:text="${s.getServiceType()}+':'+${s.toString()}" th:value="${s.id}"></p></td>
+        <td><p th:each="p:${products}" th:text="${p.getName()} +' '+ ${p.toString()}"></p></td>
         <td th:text="${order.getTotalValueOrder()} + '$'">Package</td>
         <td th:text="${order.getDate_of_subscription()}">Package</td>
         <td th:text="'for ' + ${order.getValidityPeriod().getNumOfMonths()} + ' months, ending on ' + ${order.getDate_end_subscription()}">Package</td>

@@ -18,11 +18,11 @@
                 <td th:if="${!item.isConfirmed()}"> <a th:href="@{/ConfirmationPage(orderId=${item.getId()})}"> <span
                         th:text="${item.getService().getName()}"></span></a></td>
                 <td th:if="${item.isConfirmed()}" th:text="${item.getService().name}">Package</td>
-                <td th:each="s:${item.getService().getServices()}" th:text="${s.getServiceType()}"></td>
+                <td><p th:each="s:${item.getService().getServices()}" th:text="${s.getServiceType()}"></p></td>
                 <td th:text="${item.getDate_of_subscription()}">Package</td>
                 <td th:text="${item.getDate_end_subscription()}">Package</td>
-                <td th:text="${item.getProducts()}">Package</td>
-                <td th:text="${item.isConfirmed()}">Package</td>
+                <td><p th:each="p:${products}" th:if="${p.getOrder().getId()}==${item.getId()}" th:text="${p.getName()}"></p></td>
+                <td th:text="${item.isConfirmed()}? 'confirmed': 'rejected'">Package</td>
 
             </tr>
             </tbody>
@@ -33,18 +33,20 @@
             <tr>
                 <td>Package name</td>
                 <td>Validity periods</td>
+                <td>Services</td>
                 <td>Optional products</td>
             </tr>
                     <tr th:each="pack:${available}">
                         <td><a th:href="@{/ShowServicePackage(servicePackageId=${pack.getId()})}"> <span
                                 th:text="${pack.name}"></span></a>
                         </td>
-                        <td th:each="service:${available}">
-                            <p th:each="s:${service.getServices()}" th:text="${s.getServiceType()}"></p>
-                        </td>
                         <td>
                             <p th:each="period:${pack.getValidityPeriods()}" th:text="${period.getNumOfMonths()}+'months at ' + ${period.getMonthly_fee()} + '$/month'"></p>
                         </td>
+                        <td>
+                            <p th:each="s:${pack.getServices()}" th:text="${s.getServiceType()}"></p>
+                        </td>
+
                         <td>
                             <p th:each="product:${pack.getProducts()}" th:text="${product.name}"></p>
                         </td>

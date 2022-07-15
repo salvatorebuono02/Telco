@@ -9,6 +9,7 @@ import java.util.List;
 
 @NamedQuery(name = "Products.findAll", query = "SELECT p FROM Product p")
 @NamedQuery(name = "Product.findById",query = "select p from Product p where p.id=:id")
+@NamedQuery(name="Product.findByOrder", query="select p from Product p where p.order=:order")
 public class Product implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -23,8 +24,9 @@ public class Product implements Serializable {
     @ManyToMany(mappedBy = "products",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private List<ServicePackage> servicePackages;
 
-    @ManyToMany(fetch = FetchType.EAGER,mappedBy = "products",cascade = CascadeType.ALL)
-    private List<Order> orders;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinColumn(name="orderId")
+    private Order order;
     public String toString() {
         return monthly_fee +"Euro/month";
     }
@@ -61,11 +63,11 @@ public class Product implements Serializable {
         this.monthly_fee = monthly_fee;
     }
 
-    public List<Order> getOrders() {
-        return orders;
+    public Order getOrder() {
+        return order;
     }
 
-    public void setOrders(Order order) {
-        this.orders.add(order);
+    public void setOrder(Order order) {
+        this.order=order;
     }
 }

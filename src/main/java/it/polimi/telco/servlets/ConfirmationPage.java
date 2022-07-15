@@ -86,26 +86,28 @@ public class ConfirmationPage extends HttpServlet {
         List<Service> services = servicePackageBean.findServicesFromServicePackageId(servicePackageId);
         ServicePackage sp = servicePackageBean.findServicePackageById(servicePackageId);
         String[] optionalProducts = req.getParameterValues("optionalProducts");
+        List<Product> products = new ArrayList<>();
+        for(String s: optionalProducts)
+            products.add(servicePackageBean.findProductById(Integer.parseInt(s)));
         int vdId = Integer.parseInt(req.getParameter("validityPeriod"));
         String subscription = req.getParameter("validityStart");
-        //System.out.println(subscription);
         LocalDate s = LocalDate.parse(subscription);
         Date dc = new Date();
-        ArrayList<Product> productArrayList = new ArrayList<>();
-        Order order = new Order();
+        Order order;
         /*orderBean.getOrderManaged(order);*/
         float totalValue = 0;
         float packageValue = 0;
         float optionalValue = 0;
         ValidityPeriod validityPeriod = servicePackageBean.findValidityPeriodById(vdId);
-        if (optionalProducts != null) {
-            for (String pId : optionalProducts) {
-                Product product = servicePackageBean.findProductById(Integer.parseInt(pId));
-                productArrayList.add(product);
-                optionalValue = optionalValue + (product.getMonthly_fee()*validityPeriod.getNumOfMonths());
+        List<Product> buyableProducts= new ArrayList<>();
+        //if(optionalProducts.){ if per caso in cui tutti prodotti comprati di quel pacchetto e nessuno dispoibile
+            buyableProducts= buyProd(products);
+            if (!buyableProducts.isEmpty()) {
+                for (Product p : buyableProducts) {
+                    optionalValue = optionalValue + (p.getMonthly_fee()*validityPeriod.getNumOfMonths());
+                }
             }
-
-        }
+        //}
 
         LocalDate end = s.plusMonths(validityPeriod.getNumOfMonths());
         packageValue = validityPeriod.getMonthly_fee() * validityPeriod.getNumOfMonths();
@@ -118,7 +120,7 @@ public class ConfirmationPage extends HttpServlet {
             webContext.setVariable("user", user);
             String orderStatus;
             int status = (int) (((Math.random() * 2)));
-            Boolean confirmed;
+            boolean confirmed;
             if (status == 1) {
                 orderStatus = "orderOk";
                 confirmed=true;
@@ -128,7 +130,7 @@ public class ConfirmationPage extends HttpServlet {
                 userBean.setInsolvent(user, true);
                 userBean.setFailedPayments(user);
             }
-            orderBean.CreateNewOrder(productArrayList,dc,s,end,sp,validityPeriod,totalValue,optionalValue,packageValue,user,confirmed);
+            order= orderBean.CreateNewOrder(buyableProducts,dc,s,end,sp,validityPeriod,totalValue,optionalValue,packageValue,user,confirmed);
             if (user.getFailedPayments() == 3)
                 userBean.createAlert(user, order);
             else if (user.getFailedPayments() > 3) {
@@ -138,12 +140,13 @@ public class ConfirmationPage extends HttpServlet {
             System.out.println("confirmationpage order:" + order);
             webContext.setVariable("orderStatus", orderStatus);
             webContext.setVariable("order", order);
+            webContext.setVariable("products", buyableProducts);
             webContext.setVariable("services", services);
             path = "ConfirmationPage.html";
             templateEngine.process(path, webContext, resp.getWriter());
         } else {
             //System.out.println("confPage 123");
-            orderBean.CreateNewOrder(productArrayList,dc,s,end,sp,validityPeriod,totalValue,optionalValue,packageValue,null,null);
+            order= orderBean.CreateNewOrder(buyableProducts,dc,s,end,sp,validityPeriod,totalValue,optionalValue,packageValue,null,null);
 //                    orderBean.setOrderInStandBy(order.getId());
             req.getSession().setAttribute("orderId", order.getId());
             System.out.println(req.getSession().getAttribute("orderId"));
@@ -152,6 +155,18 @@ public class ConfirmationPage extends HttpServlet {
         }
 
 
+    }
+
+    private List<Product> buyProd(List<Product> optionalProducts) {
+        List<Product> allProds = servicePackageBean.findAllProducts();
+        List<Product> buyable= new ArrayList<>();
+        for(int j=0; j < optionalProducts.size();j++){
+            int finalJ = j;
+            Optional<Product> p1= allProds.stream().filter(p -> p.getName().equals(optionalProducts.get(finalJ).getName()) && p.getOrder()==null).findFirst();
+            p1.ifPresent(buyable::add);
+            }
+        System.out.println("buyable: "+ buyable);
+        return buyable;
     }
 
     private void orderAlreadyExisting(HttpServletRequest req, HttpServletResponse resp, User user,
@@ -163,6 +178,9 @@ public class ConfirmationPage extends HttpServlet {
             //User user = userBean.findById(userId);
             int servicePackageId = order.get().getService().getId();
             //check se ordine in sessione è nuova prova di pagamento dell'utente
+            List<Product> orderProducts= orderBean.findProductsFromOrder(order.get());
+            //if(optionalProducts.){ if per caso in cui tutti prodotti comprati di quel pacchetto e nessuno dispoibile
+
             boolean orderRetry =
                     (packageAlreadyOwnedByUser(user, order.get(), orderBean) && !order.get().isConfirmed());
             if (!packageAlreadyOwnedByUser(user, order.get(), orderBean) || orderRetry) {
@@ -172,12 +190,14 @@ public class ConfirmationPage extends HttpServlet {
                 webContext.getSession().setAttribute("user", user);
                 webContext.setVariable("user", user);
                 webContext.setVariable("order", order.get());
+                webContext.setVariable("products", orderProducts);
                 webContext.setVariable("services", services);
                 String orderStatus;
                 int status = (int) (((Math.random() * 2)));
                 if (status == 1) {
                     orderStatus = "orderOk";
                     orderBean.setConfirmed(order.get(), true);
+                    orderBean.updateProductsOrder(order.get());
                     //se la nuova prova di pagamento va a buon fine, tolgo un flag insolvente dall'utente
                     if (orderRetry) {
                         userBean.removeFailedPayments(user);

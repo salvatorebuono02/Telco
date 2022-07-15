@@ -23,7 +23,7 @@
     <fieldset>
         <legend>Options</legend>
         <label>Choose if you want any optional product:</label>
-        <input type="checkbox" name="optionalProducts" th:each="op:${servicePackage.getProducts()}" th:value="${op.id}" th:text="${op.name}">
+        <input type="checkbox" name="optionalProducts" th:if="${!products!=null}" th:each="op:${products}" th:value="${op.getId()}" th:text="${op.getName()}+${op.toString()}">
         <br>
         <label>Choose one validityPeriod:</label>
         <input type="checkbox" name="validityPeriod" th:each="period:${servicePackage.getValidityPeriods()}" th:value="${period.id}" th:text="${period.getNumOfMonths()}+'months at ' + ${period.getMonthly_fee()} + '$/month'" >
