@@ -72,10 +72,13 @@ public class UserBean {
     }
 
     public void createAlert(User user, Order order){
+        System.out.println("in create new alert");
         Alert alert =new Alert(user,order.getTotalValueOrder(),order.getDate_of_creation());
         user.setAlert(alert);
+        System.out.println("user alert:" + user.getAlert());
         try{
-            em.merge(user);
+            em.persist(alert);
+            em.flush();
         } catch (ConstraintViolationException ignored) {}
     }
 
@@ -113,5 +116,9 @@ public class UserBean {
         if(!em.createNamedQuery("Alert.findByUser", Alert.class).setParameter("user",user).getResultList().isEmpty())
          return true;
         return false;
+    }
+
+    public int getFails(int id) {
+        return em.createNamedQuery("User.findFailedPayments",User.class).setParameter("id",id).getSingleResult().getFailedPayments();
     }
 }

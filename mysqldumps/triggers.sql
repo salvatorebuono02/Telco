@@ -140,12 +140,11 @@ create definer = current_user trigger addSales
     after insert on `order` for each row begin
     declare x,y,z float;
     if NEW.confirmed=true then
-        select o.totalvalueservices,o.totalvalueproducts,v.numOfMonths into x,y,z
+        select o.totalvalueservices,o.totalvalueproducts into x,y
         from `order` o
-                 join validityperiod v on o.validityId = v.id
         where o.serviceId=NEW.serviceId;
         update salesPackage s
-        set s.totalSalesWithProduct=s.totalSalesWithProduct+x+(y*z), s.totalSalesWithoutProduct=s.totalSalesWithoutProduct+x
+        set s.totalSalesWithProduct=s.totalSalesWithProduct+x+y, s.totalSalesWithoutProduct=s.totalSalesWithoutProduct+x
         where s.package_id in (select o.serviceId
                                from `order` o
                                where o.serviceId=NEW.serviceId);
@@ -159,12 +158,11 @@ create definer =current_user trigger updateSales
 begin
     declare x,y,z float;
     if NEW.confirmed=true then
-        select o.totalvalueservices,o.totalvalueproducts,v.numOfMonths into x,y,z
+        select o.totalvalueservices,o.totalvalueproducts into x,y
         from `order` o
-                 join validityperiod v on o.validityId = v.id
         where o.serviceId=NEW.serviceId;
         update salesPackage s
-        set s.totalSalesWithProduct=s.totalSalesWithProduct+x+(y*z), s.totalSalesWithoutProduct=s.totalSalesWithoutProduct+x
+        set s.totalSalesWithProduct=s.totalSalesWithProduct+x+y, s.totalSalesWithoutProduct=s.totalSalesWithoutProduct+x
         where s.package_id in (select o.serviceId
                                from `order` o
                                where o.serviceId=NEW.serviceId);

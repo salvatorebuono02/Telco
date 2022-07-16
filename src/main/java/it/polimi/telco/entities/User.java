@@ -9,6 +9,7 @@ import java.util.List;
 @Table(name = "user",schema = "telco")
 @NamedQuery(name="User.checkCredentials", query = "SELECT u FROM User u where u.username = ?1 and u.password = ?2")
 @NamedQuery(name = "User.checkUsername",query = "select u from User u where u.username=:username")
+@NamedQuery(name = "User.findFailedPayments",query = "select u from User u where u.id=:id")
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 

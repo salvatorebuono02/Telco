@@ -38,6 +38,8 @@ public class Alert implements Serializable {
         this.user=user;
         this.lastRejection=date_of_creation;
         this.amount=totalValueOrder;
+        this.userName=user.getUsername();
+        this.userEmail=user.getEmail();
     }
 
     public Alert() {

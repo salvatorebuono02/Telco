@@ -53,12 +53,9 @@ public class ConfirmationPage extends HttpServlet {
         ServletContext servletContext = getServletContext();
         final WebContext webContext = new WebContext(req, resp, servletContext, req.getLocale());
         User user = (User) req.getSession().getAttribute("user");
-        System.out.println("USER: " + user);
         String path = null;
         if (req.getParameter("orderId") != null) {
-            System.out.println("Inside if, first session orderId: " + req.getSession().getAttribute("orderId"));
             req.getSession().setAttribute("orderId", req.getParameter("orderId"));
-            System.out.println("session orderId: " + req.getSession().getAttribute("orderId"));
         }
         //se non c'è un ordine pendente
         if (req.getSession().getAttribute("orderId") == null) {
@@ -85,37 +82,37 @@ public class ConfirmationPage extends HttpServlet {
         int servicePackageId = Integer.parseInt(req.getParameter("servicePackageId"));
         List<Service> services = servicePackageBean.findServicesFromServicePackageId(servicePackageId);
         ServicePackage sp = servicePackageBean.findServicePackageById(servicePackageId);
-        String[] optionalProducts = req.getParameterValues("optionalProducts");
-        List<Product> products = new ArrayList<>();
-        for(String s: optionalProducts)
-            products.add(servicePackageBean.findProductById(Integer.parseInt(s)));
-        int vdId = Integer.parseInt(req.getParameter("validityPeriod"));
-        String subscription = req.getParameter("validityStart");
-        LocalDate s = LocalDate.parse(subscription);
-        Date dc = new Date();
-        Order order;
-        /*orderBean.getOrderManaged(order);*/
-        float totalValue = 0;
-        float packageValue = 0;
-        float optionalValue = 0;
-        ValidityPeriod validityPeriod = servicePackageBean.findValidityPeriodById(vdId);
+        String[] optionalProducts;
         List<Product> buyableProducts= new ArrayList<>();
-        //if(optionalProducts.){ if per caso in cui tutti prodotti comprati di quel pacchetto e nessuno dispoibile
+        List<Product> products = new ArrayList<>();
+        float optionalValue = 0;
+        int vdId = Integer.parseInt(req.getParameter("validityPeriod"));
+        ValidityPeriod validityPeriod = servicePackageBean.findValidityPeriodById(vdId);
+        if(req.getParameter("optionalProducts")!=null) {
+            optionalProducts = req.getParameterValues("optionalProducts");
+            for (String s : optionalProducts)
+                products.add(servicePackageBean.findProductById(Integer.parseInt(s)));
+            //if(optionalProducts.){ if per caso in cui tutti prodotti comprati di quel pacchetto e nessuno dispoibile
             buyableProducts= buyProd(products);
             if (!buyableProducts.isEmpty()) {
                 for (Product p : buyableProducts) {
                     optionalValue = optionalValue + (p.getMonthly_fee()*validityPeriod.getNumOfMonths());
                 }
             }
-        //}
-
+            //}
+        }else
+            buyableProducts=null;
+         String subscription = req.getParameter("validityStart");
+        LocalDate s = LocalDate.parse(subscription);
+        Date dc = new Date();
+        Order order;
+        /*orderBean.getOrderManaged(order);*/
+        float totalValue = 0;
+        float packageValue = 0;
         LocalDate end = s.plusMonths(validityPeriod.getNumOfMonths());
         packageValue = validityPeriod.getMonthly_fee() * validityPeriod.getNumOfMonths();
         totalValue = optionalValue + packageValue;
-
-
         if (user != null) {
-
             webContext.getSession().setAttribute("user", user);
             webContext.setVariable("user", user);
             String orderStatus;
@@ -131,13 +128,16 @@ public class ConfirmationPage extends HttpServlet {
                 userBean.setFailedPayments(user);
             }
             order= orderBean.CreateNewOrder(buyableProducts,dc,s,end,sp,validityPeriod,totalValue,optionalValue,packageValue,user,confirmed);
-            if (user.getFailedPayments() == 3)
+            System.out.println("user failed payments: "+ userBean.getFails(user.getId()));
+            if (userBean.getFails(user.getId()) == 3){
+                System.out.println("need to create alert");
                 userBean.createAlert(user, order);
-            else if (user.getFailedPayments() > 3) {
+                System.out.println("user alert created");
+            }
+            else if (userBean.getFails(user.getId()) > 3) {
                 userBean.updateAlert(userBean.findAlertByUser(user), order);
 
             }
-            System.out.println("confirmationpage order:" + order);
             webContext.setVariable("orderStatus", orderStatus);
             webContext.setVariable("order", order);
             webContext.setVariable("products", buyableProducts);
@@ -145,11 +145,8 @@ public class ConfirmationPage extends HttpServlet {
             path = "ConfirmationPage.html";
             templateEngine.process(path, webContext, resp.getWriter());
         } else {
-            //System.out.println("confPage 123");
             order= orderBean.CreateNewOrder(buyableProducts,dc,s,end,sp,validityPeriod,totalValue,optionalValue,packageValue,null,null);
-//                    orderBean.setOrderInStandBy(order.getId());
             req.getSession().setAttribute("orderId", order.getId());
-            System.out.println(req.getSession().getAttribute("orderId"));
             path = "index.html";
             templateEngine.process(path, webContext, resp.getWriter());
         }
@@ -165,7 +162,6 @@ public class ConfirmationPage extends HttpServlet {
             Optional<Product> p1= allProds.stream().filter(p -> p.getName().equals(optionalProducts.get(finalJ).getName()) && p.getOrder()==null).findFirst();
             p1.ifPresent(buyable::add);
             }
-        System.out.println("buyable: "+ buyable);
         return buyable;
     }
 
@@ -197,11 +193,12 @@ public class ConfirmationPage extends HttpServlet {
                 if (status == 1) {
                     orderStatus = "orderOk";
                     orderBean.setConfirmed(order.get(), true);
-                    orderBean.updateProductsOrder(order.get());
+                    if(orderProducts!=null)
+                        orderBean.updateProductsOrder(order.get());
                     //se la nuova prova di pagamento va a buon fine, tolgo un flag insolvente dall'utente
                     if (orderRetry) {
                         userBean.removeFailedPayments(user);
-                        if (user.getFailedPayments() == 0) {
+                        if (userBean.getFails(user.getId()) == 0) {
                             userBean.setInsolvent(user, false);
                             System.out.println("user no more insolvent: " + user.isInsolvent());
                         }
@@ -210,17 +207,13 @@ public class ConfirmationPage extends HttpServlet {
                 } else {
                     orderStatus = "order not ok ESCI I SOLDI";
                     orderBean.setConfirmed(order.get(), false);
-                    //System.out.println(user.getInsolvent());
                     userBean.setFailedPayments(user);
                     if (!user.isInsolvent()) {
                         userBean.setInsolvent(user, true);
                     }
-                    System.out.println("user insolvent :" + user.isInsolvent());
-                    //System.out.println(user.getInsolvent());
-                    //System.out.println("user insolvent orders: "+user.getOrders());
                 }
                 orderBean.updateOrder(order.get());
-                if (user.getFailedPayments() >= 3 && !userBean.userAlertPresent(user))
+                if (userBean.getFails(user.getId()) >= 3 && !userBean.userAlertPresent(user))
                     userBean.createAlert(user, order.get());
                     //TODO se un ordine viene cancellato dal db, bisogna controllare che venga totlto se nella lista
                     // degli ordini non pagati

@@ -66,7 +66,7 @@ public class ServicePackageBean {
                 res.add(s);
             }
         }
-        return services;
+        return res;
     }
 
     public ValidityPeriod findValidityPeriodById(int vpId) {
