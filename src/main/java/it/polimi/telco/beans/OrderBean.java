@@ -76,10 +76,7 @@ public class OrderBean {
     }
 
     public Order CreateNewOrder(List<Product> productArrayList, Date dc, LocalDate s, LocalDate end, ServicePackage sp, ValidityPeriod validityPeriod, float totalValue, float optionalValue, float packageValue, User user, Boolean confirmed){
-        ArrayList<Product> products=new ArrayList<>();
-        for(Product p: productArrayList){
-            products.add(entityManager.find(Product.class,p.getId()));
-        }
+
         ServicePackage servicePackage=entityManager.find(ServicePackage.class,sp.getId());
         ValidityPeriod validityPeriod1=entityManager.find(ValidityPeriod.class,validityPeriod.getId());
         User user1=null;
@@ -87,18 +84,29 @@ public class OrderBean {
             user1=entityManager.find(User.class,user.getId());
         }
         Order order=new Order(/*products,*/dc,s,end,servicePackage,validityPeriod1,totalValue,optionalValue,packageValue,user1,confirmed);
-        for (Product p:products){
-            p.setOrder(order);
-            entityManager.merge(p);
+        if(productArrayList!=null){
+            ArrayList<Product> products=new ArrayList<>();
+            for(Product p: productArrayList){
+                products.add(entityManager.find(Product.class,p.getId()));
+            }
+            for (Product p:products){
+                p.setOrder(order);
+                entityManager.merge(p);
+            }
         }
-        entityManager.persist(servicePackage);
+        //entityManager.merge(order);
+        entityManager.persist(order);
         entityManager.flush();
         return order;
     }
 
 
     public List<Product> findProductsFromOrder(Order order) {
-        return entityManager.createNamedQuery("Product.findByOrder", Product.class).setParameter("order",order).getResultList();
+        if(entityManager.createNamedQuery("Product.findByOrder", Product.class).setParameter("order",order).getResultList().isEmpty())
+            return null;
+        else
+            return entityManager.createNamedQuery("Product.findByOrder", Product.class).setParameter("order",order).getResultList();
+
     }
 
     public void updateProductsOrder(Order order) {
