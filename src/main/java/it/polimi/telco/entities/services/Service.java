@@ -19,7 +19,7 @@ public abstract class Service implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinTable(name = "service_servicePkg",joinColumns = {@JoinColumn(name = "service_id")},inverseJoinColumns = {@JoinColumn(name = "package_id")})
     private List<ServicePackage> servicePackages;
 

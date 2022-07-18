@@ -22,7 +22,7 @@ public class ServicePackage implements Serializable {
     @OneToMany(mappedBy ="service",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Order> orders;
 
-    @ManyToMany(fetch = FetchType.EAGER,mappedBy = "servicePackages",cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER,mappedBy = "servicePackages",cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<Service> services;
 
 

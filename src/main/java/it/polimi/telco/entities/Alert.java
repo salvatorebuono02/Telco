@@ -19,7 +19,7 @@ public class Alert implements Serializable {
             CascadeType.PERSIST,
             CascadeType.MERGE,
             CascadeType.REFRESH,
-            CascadeType.DETACH},orphanRemoval = true)
+            CascadeType.DETACH})
     @JoinColumn(name = "userId")
     private User user;
 

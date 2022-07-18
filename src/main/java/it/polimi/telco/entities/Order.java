@@ -37,7 +37,7 @@ public class Order implements Serializable {
     @JoinColumn(name="validityId")
     private ValidityPeriod validityPeriod;
 
-    @OneToMany(mappedBy ="order",orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy ="order", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<Product> products;
 
     private float totalValueOrder;
