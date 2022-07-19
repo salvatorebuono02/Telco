@@ -9,11 +9,20 @@
 <body>
 
     <h1>HOMEPAGE</h1>
-    <td th:text="${user!=null} ? ${user.username}: 'You are not logged in'" />
+    <h2 th:text="${user!=null} ? ${user.username}: 'You are not logged in'" />
 
     <h2>These are your active packages</h2>
     <table class="table">
             <tbody>
+            <tr>
+                <td><h3>Package</h3></td>
+                <td><h3>Services</h3></td>
+                <td><h3>Date of Subscription</h3></td>
+                <td><h3>End subscription</h3></td>
+                <td><h3>Optional Products</h3></td>
+                <td><h3>Status</h3></td>
+
+            </tr>
             <tr th:each="item:${active}">
                 <td th:if="${!item.isConfirmed()}"> <a th:href="@{/ConfirmationPage(orderId=${item.getId()})}"> <span
                         th:text="${item.getService().getName()}"></span></a></td>
@@ -31,10 +40,10 @@
     <table class="table">
             <tbody>
             <tr>
-                <td>Package name</td>
-                <td>Validity periods</td>
-                <td>Services</td>
-                <td>Optional products</td>
+                <td><h3>Package name</h3></td>
+                <td><h3>Validity periods</h3></td>
+                <td><h3>Services</h3></td>
+                <td><h3>Optional products</h3></td>
             </tr>
                     <tr th:each="pack:${available}">
                         <td><a th:href="@{/ShowServicePackage(servicePackageId=${pack.getId()})}"> <span

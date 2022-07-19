@@ -11,7 +11,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "order",schema = "telco")
-
 @NamedQuery(name="Order.findFromId",query="select o from Order o where o.id=:id")
 @NamedQuery(name="Order.findFromCreator", query="select distinct o from Order o where o.creator=: user")
 public class Order implements Serializable {
@@ -21,27 +20,27 @@ public class Order implements Serializable {
     private int id;
     private Date date_of_creation;
     private LocalDate date_of_subscription;
-
     private boolean confirmed;
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToOne(fetch = FetchType.EAGER, cascade =
+            {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "creator")
     private User creator;
-
-    @ManyToOne(fetch= FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToOne(fetch= FetchType.EAGER, cascade =
+            {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name= "serviceId")
     private ServicePackage service;
-
-    //TODO orphanRemoval?
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToOne(fetch = FetchType.EAGER, cascade =
+            {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name="validityId")
     private ValidityPeriod validityPeriod;
-
-    @OneToMany(mappedBy ="order", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @OneToMany(mappedBy ="order", cascade =
+            {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.REFRESH, CascadeType.DETACH})
     private List<Product> products;
-
     private float totalValueOrder;
-
     private float totalvalueservices;
 
     public Order(/*ArrayList<Product> products,*/ Date dc, LocalDate s, LocalDate end, ServicePackage servicePackage, ValidityPeriod validityPeriod1, float totalValue, float optionalValue, float packageValue, User user1, Boolean confirmed) {
@@ -56,6 +55,19 @@ public class Order implements Serializable {
         this.totalvalueservices=packageValue;
         this.creator=user1;
         this.confirmed=confirmed;
+    }
+
+    public Order(/*ArrayList<Product> products,*/ Date dc, LocalDate s, LocalDate end, ServicePackage servicePackage, ValidityPeriod validityPeriod1, float totalValue, float optionalValue, float packageValue, User user1) {
+//        this.products=products;
+        this.date_of_creation=dc;
+        this.date_of_subscription=s;
+        this.date_end_subscription=end;
+        this.service=servicePackage;
+        this.validityPeriod=validityPeriod1;
+        this.totalValueOrder=totalValue;
+        this.totalvalueproducts=optionalValue;
+        this.totalvalueservices=packageValue;
+        this.creator=user1;
     }
 
     public float getTotalvalueservices() {

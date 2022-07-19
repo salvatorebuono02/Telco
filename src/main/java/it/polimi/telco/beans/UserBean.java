@@ -19,13 +19,11 @@ import java.util.List;
 public class UserBean {
     @PersistenceContext
     private EntityManager em;
-
     public UserBean() {
     }
-
     public User findById(int userId){ return em.find(User.class,userId);}
-
-    public Integer checkCredentials(String usrn,String pwd) throws CredentialsException, NonUniqueResultException {
+    public Integer checkCredentials(String usrn,String pwd) throws CredentialsException,
+            NonUniqueResultException {
         List<User> userList;
         try {
             userList=em.createNamedQuery("User.checkCredentials",User.class).setParameter(1,usrn).setParameter(2,pwd).getResultList();
@@ -55,8 +53,8 @@ public class UserBean {
             return found.getId();
         }
     }
-
-    public User createUser(String username,String password,String name, String lastname, String email) throws SQLException {
+    public User createUser(String username,String password,String name, String lastname,
+                           String email) throws SQLException {
         User newUser= new User();
         newUser.setFirstname(name);
         newUser.setLastname(lastname);
@@ -70,7 +68,6 @@ public class UserBean {
         em.flush();
         return newUser;
     }
-
     public void createAlert(User user, Order order){
         System.out.println("in create new alert");
         Alert alert =new Alert(user,order.getTotalValueOrder(),order.getDate_of_creation());
@@ -81,44 +78,37 @@ public class UserBean {
             em.flush();
         } catch (ConstraintViolationException ignored) {}
     }
-
     public void setFailedPayments(User user ){
         User user1= em.find(User.class, user.getId());
         user1.setFailedPayments();
         em.merge(user1);
     }
-
-
     public void removeFailedPayments(User user){
         User user1 = em.find(User.class,user.getId());
         user1.removeFailedPayment();
         em.merge(user1);
     }
-
     public void setInsolvent(User user, boolean b) {
         User user1 = em.find(User.class, user.getId());
         user1.setInsolvent(b);
         em.merge(user1);
     }
-
     public void updateAlert(Alert alert, Order order) {
         Alert alert1= em.find(Alert.class, alert.getId());
         alert1.setAmount(order.getTotalValueOrder());
         alert1.setLastRejection(order.getDate_of_creation());
         em.merge(alert1);
     }
-
     public Alert findAlertByUser(User user) {
         return em.createNamedQuery("Alert.findByUser", Alert.class).setParameter("user",user).getResultStream().findFirst().get();
     }
-
     public boolean userAlertPresent(User user) {
         if(!em.createNamedQuery("Alert.findByUser", Alert.class).setParameter("user",user).getResultList().isEmpty())
          return true;
         return false;
     }
-
     public int getFails(int id) {
         return em.createNamedQuery("User.findFailedPayments",User.class).setParameter("id",id).getSingleResult().getFailedPayments();
     }
+
 }

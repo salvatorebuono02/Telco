@@ -9,7 +9,8 @@ import java.io.Serializable;
 
 @Entity
 @NamedQuery(name="TotalPurchasePackage.findAll", query="select p from TotalPurchasePackage p")
-@NamedQuery(name="TotalPurchasePackage.findByPackage", query="select p from TotalPurchasePackage p where p.package_id=:package_id")
+@NamedQuery(name="TotalPurchasePackage.findByPackage", query="select p from TotalPurchasePackage p " +
+        "where p.package_id=:package_id")
 @Table(name="totalpurchaseperpackage", schema="telco")
 public class TotalPurchasePackage implements Serializable {
     private static final long serialVersionUID = 1L;

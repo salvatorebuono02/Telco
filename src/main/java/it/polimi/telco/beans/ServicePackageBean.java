@@ -18,28 +18,10 @@ import java.util.Optional;
 public class ServicePackageBean {
     @PersistenceContext
     private EntityManager entityManager;
-
     public ServicePackageBean(){}
-
-
-    /*public List<ServicePackage> findAvailable(User user){
-        List<ServicePackage> allServicePackages=entityManager.createNamedQuery("ServicePackage.findAll",ServicePackage.class).getResultList();
-        List<ServicePackage> availableServicePackages=new ArrayList<>();
-        for(int i=0;i< allServicePackages.size();i++){
-            if(user!=null) {
-                if (allServicePackages.get(i).getUser() == null || allServicePackages.get(i).getUser().getId() != user.getId()) {
-                    availableServicePackages.add(allServicePackages.get(i));
-                }
-            }
-            else
-                availableServicePackages.add(allServicePackages.get(i));
-        }
-        return availableServicePackages;
-    }*/
     public List<ServicePackage> findAllServicePackages(){
         return entityManager.createNamedQuery("ServicePackage.findAll",ServicePackage.class).getResultList();
     }
-
     public ServicePackage findServicePackageByName(String name){
         List<ServicePackage> allServicePackages=entityManager.createNamedQuery("ServicePackage.findAll",ServicePackage.class).getResultList();
         for (int i = 0; i < allServicePackages.size(); i++) {
@@ -48,15 +30,12 @@ public class ServicePackageBean {
         }
         return null;
     }
-
     public ServicePackage findServicePackageById(int id){
         return entityManager.createNamedQuery("ServicePackage.findId",ServicePackage.class).setParameter("id", id).getSingleResult();
     }
-
     public List<Service> findAllServices() {
         return entityManager.createNamedQuery("Service.findAll",Service.class).getResultList();
     }
-
     public List<Service> findServicesFromServicePackageId(int id){
         ServicePackage servicePackage=findServicePackageById(id);
         List<Service> services=findAllServices();
@@ -68,7 +47,6 @@ public class ServicePackageBean {
         }
         return res;
     }
-
     public ValidityPeriod findValidityPeriodById(int vpId) {
         List<ValidityPeriod> validityPeriodArrayList = entityManager.createNamedQuery("ValidityPeriod.findAll", ValidityPeriod.class).getResultList();
         for (int i = 0; i < validityPeriodArrayList.size(); i++) {
@@ -77,7 +55,6 @@ public class ServicePackageBean {
         }
         return null;
     }
-
     public Product findProductById(int productId) {
         List<Product> productArrayList =entityManager.createNamedQuery("Products.findAll", Product.class).getResultList();
         for (int i = 0; i < productArrayList.size(); i++) {
@@ -86,7 +63,6 @@ public class ServicePackageBean {
         }
         return null;
     }
-
     public List<Product> findProductsType(ServicePackage servicePackage) {
         List<Product> prodTypes= servicePackage.getProducts();
         List<Product> allProds = findAllProducts();
@@ -106,7 +82,6 @@ public class ServicePackageBean {
 
         return prodTypes;
     }
-
     public List<Product> findAllProducts() {
         return entityManager.createNamedQuery("Products.findAll", Product.class).getResultList();
     }

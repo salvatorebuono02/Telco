@@ -6,19 +6,17 @@ import it.polimi.telco.entities.ServicePackage;
 import javax.persistence.*;
 import java.io.Serializable;
 @Entity
-@NamedQuery(name="BestProduct.findOne", query="select p from BestProduct p where p.sales= (select max(p1.sales) from BestProduct p1 where p1=p)")
+@NamedQuery(name="BestProduct.findOne", query="select p from BestProduct p where " +
+        "p.sales= (select max(p1.sales) from BestProduct p1)")
 @Table(name="salesForEachOptProduct", schema="telco")
 public class BestProduct implements Serializable {
     private static final long serialVersionUID = 1L;
-
     @Id
     @Column(name="optionalProduct_id", nullable = false)
     private int optionalProduct_id;
-
     @OneToOne
     @JoinColumn(name="optionalProduct_id")
     private Product product;
-
     private float sales;
 
     public int getOptionalProduct_id() {

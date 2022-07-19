@@ -22,16 +22,11 @@ public class Alert implements Serializable {
             CascadeType.DETACH})
     @JoinColumn(name = "userId")
     private User user;
-
     @Column(name = "userName",length = 45)
     private String userName;
-
     @Column(name = "userEmail",length = 45)
     private String userEmail;
-
-
     private float amount;
-
     private Date lastRejection;
 
     public Alert(User user, float totalValueOrder, Date date_of_creation) {

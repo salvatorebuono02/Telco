@@ -13,11 +13,10 @@ public class ValidityPeriod implements Serializable {
     private int id;
     private int monthly_fee;
     private int numOfMonths;
-
     @ManyToMany(mappedBy = "validityPeriods",fetch = FetchType.LAZY)
     private List<ServicePackage> servicePackages;
-
-    @OneToMany(mappedBy="validityPeriod",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true )
+    @OneToMany(mappedBy="validityPeriod",fetch = FetchType.LAZY,cascade = CascadeType.ALL,
+                    orphanRemoval = true )
     private List<Order> orders;
     @Override
     public String toString() {

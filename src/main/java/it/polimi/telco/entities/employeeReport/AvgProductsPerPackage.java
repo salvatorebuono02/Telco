@@ -8,7 +8,8 @@ import java.io.Serializable;
 
 @Entity
 @NamedQuery(name="AvgProductsPerPackage.findAll", query ="select n from AvgProductsPerPackage n" )
-@NamedQuery(name="AvgProductsPerPackage.findByPackage", query="select n from AvgProductsPerPackage n where n.package_id=:package_id")
+@NamedQuery(name="AvgProductsPerPackage.findByPackage", query="select n from AvgProductsPerPackage n " +
+        "where n.package_id=:package_id")
 @Table(name="avgnumofproductsperpackage", schema="telco")
 public class AvgProductsPerPackage implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -21,7 +22,7 @@ public class AvgProductsPerPackage implements Serializable {
     @JoinColumn(name="package_id")
     private ServicePackage servicePackage;
 
-    private float average;
+    private float avg;
 
 
     public AvgProductsPerPackage() {
@@ -45,10 +46,10 @@ public class AvgProductsPerPackage implements Serializable {
     }
 
     public float getAverage() {
-        return average;
+        return avg;
     }
 
     public void setAverage(float average) {
-        this.average = average;
+        this.avg = average;
     }
 }

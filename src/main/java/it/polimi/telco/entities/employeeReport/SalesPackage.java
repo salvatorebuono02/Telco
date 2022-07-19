@@ -15,13 +15,10 @@ public class SalesPackage implements Serializable {
     @Id
     @Column(name="package_id", nullable = false)
     private int package_id;
-
     @OneToOne
     @JoinColumn(name="package_id")
     private ServicePackage servicePackage;
-
     private int totalSalesWithProduct=0;
-
     private int totalSalesWithoutProduct=0;
 
     public int getPackage_id() {

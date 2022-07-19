@@ -7,8 +7,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1> Report Page</h1>
+<h1> REPORT PAGE</h1>
+<h2 th:text="${employee.username}">Name </h2><br>
+<br>
 
+<h2>Purchases per package</h2>
 <table class="table">
     <tbody>
     <tr>
@@ -20,7 +23,9 @@
         <td  th:text="${item.totalPurchases}">Package</td>
     </tr>
     </tbody>
-</table>
+</table><br>
+
+<h2>Purchases per package and validity period</h2>
 
 <table class="table">
     <tbody>
@@ -31,12 +36,13 @@
     </tr>
     <tr th:if="${totalPurchasePackAndVal!=null}" th:each="item:${totalPurchasePackAndVal}">
         <td  th:text="${item.servicePackage.name}"> Package</td>
-        <td  th:text="${item.validityPeriod}">Package</td>
+        <td  th:text="${item.validityPeriod.toString()}">Package</td>
         <td  th:text="${item.totalPurchases}">Package</td>
     </tr>
     </tbody>
-</table>
+</table><br>
 
+<h2>Total income from packages with and without products</h2>
 <table class="table">
     <tbody>
     <tr>
@@ -51,8 +57,9 @@
         <td  th:text="${item.getTotalSalesWithProduct()} + '$'">Package</td>
     </tr>
     </tbody>
-</table>
+</table><br>
 
+<h2>Average number of products sold per package</h2>
 <table class="table">
     <tbody>
     <tr>
@@ -62,11 +69,12 @@
     </tr>
     <tr  th:if="${avgProductsPerPackage!=null}" th:each="item:${avgProductsPerPackage}">
         <td  th:text="${item.servicePackage.name}"> Package</td>
-        <td  th:text="${item.average} + '$'">Package</td>
+        <td  th:text="${item.getAverage()>0} ? ${item.getAverage()}: '0'">Package</td>
     </tr>
     </tbody>
-</table>
+</table><br>
 
+<h2>Insolvent users and related denied orders and alerts</h2>
 <table class="table">
     <tbody>
     <tr>
@@ -77,11 +85,11 @@
     </tr>
     <tr th:if="${insolvents!=null}" th:each="user:${insolvents}">
         <td th:text="${user.getUser().username}">Username</td>
-        <td th:each="s:${suspendedOrders}" th:text="${s.order.getCreator().id==user.user_id} ? ${s.order.service} "/>
+        <td th:each="s:${suspendedOrders}" th:text="${s.order.getCreator().id==user.user_id} ? ${s.order.service.name} "/>
         <td th:each="a:${alertReport}" th:text="${a.getAlert().getUser().id==user.user_id} ? ${a.alert.lastRejection} "/>
     </tr>
     </tbody>
-</table>
+</table><br>
 
 <div>
     <p th:text="${bestProduct!=null} ? 'Best product: '+ ${bestProduct.product.name} : 'No best product found'"></p>

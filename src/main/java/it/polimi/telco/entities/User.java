@@ -7,38 +7,29 @@ import java.util.List;
 
 @Entity
 @Table(name = "user",schema = "telco")
-@NamedQuery(name="User.checkCredentials", query = "SELECT u FROM User u where u.username = ?1 and u.password = ?2")
+@NamedQuery(name="User.checkCredentials", query = "SELECT u FROM User u where u.username = ?1 " +
+                                                            "and u.password = ?2")
 @NamedQuery(name = "User.checkUsername",query = "select u from User u where u.username=:username")
 @NamedQuery(name = "User.findFailedPayments",query = "select u from User u where u.id=:id")
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     @Column(name = "firstname",length = 45)
     private String firstname;
     @Column(name = "lastname",length = 45)
-
     private String lastname;
     @Column(name = "email",length = 45)
     private String email;
     @Column(name = "username",length = 45)
-
     private String username;
     @Column(name = "password",length = 45)
-
     private String password;
-
     private boolean insolvent=false;
-
     private int failedPayments = 0;
-
-
    @OneToMany(fetch= FetchType.EAGER, mappedBy="creator",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Order> orders = new ArrayList<>();
-
    @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
    private Alert alert;
 

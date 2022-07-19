@@ -18,20 +18,19 @@ public class ServicePackage implements Serializable {
     private int id;
     @Column(name = "name",length = 45)
     private String name;
-
     @OneToMany(mappedBy ="service",orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Order> orders;
-
-    @ManyToMany(fetch = FetchType.EAGER,mappedBy = "servicePackages",cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToMany(fetch = FetchType.EAGER,mappedBy = "servicePackages",cascade =
+            {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<Service> services;
-
-
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "service_package_product", joinColumns = {@JoinColumn(name = "servicePackage_id")}, inverseJoinColumns = {@JoinColumn(name = "product_id")})
+    @JoinTable(name = "service_package_product", joinColumns = {@JoinColumn(name = "servicePackage_id")},
+            inverseJoinColumns = {@JoinColumn(name = "product_id")})
     private List<Product> products;
-
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "service_package_validity_periods", joinColumns = {@JoinColumn(name = "servicePackage_id")}, inverseJoinColumns = {@JoinColumn(name = "validityPeriod_id")})
+    @JoinTable(name = "service_package_validity_periods", joinColumns =
+                                                {@JoinColumn(name = "servicePackage_id")},
+            inverseJoinColumns = {@JoinColumn(name = "validityPeriod_id")})
     private List<ValidityPeriod> validityPeriods;
 
     public List<ValidityPeriod> getValidityPeriods() {

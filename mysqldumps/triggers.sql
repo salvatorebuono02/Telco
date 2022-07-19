@@ -1,17 +1,16 @@
 DROP TABLE IF EXISTS totalpurchaseperpackage;
 DROP TRIGGER IF EXISTS addPurchaseToPackage;
 DROP TRIGGER IF EXISTS updatePurchaseToPackage;
-drop trigger if exists createOrderAndAssociatedServicePackage;
+drop trigger if exists insertServicePackage;
 
 drop table if exists totalPurchasePerPackAndValidityPeriod;
-drop trigger if exists createOrderAndAssociatedServicePackageAndValPeriod;
+drop trigger if exists insertServicePackageAndValPeriod;
 drop trigger if exists addPurchaseToPackageAndValPeriod;
 drop trigger if exists updatePurchaseToPackageAndValPeriod;
 
 drop table if exists salesPackage;
 drop trigger if exists addSales;
 drop trigger if exists updateSales;
-# drop trigger if exists createUpdateSales;
 drop trigger if exists createSales;
 
 drop table if exists avgnumofproductsperpackage;
@@ -49,7 +48,7 @@ create table totalpurchaseperpackage
 );
 
 delimiter //
-create definer = current_user trigger createOrderAndAssociatedServicePackage
+create definer = current_user trigger insertServicePackage
     after insert on service_package for each row begin
     insert into totalpurchaseperpackage(package_id)
     values (NEW.id);
@@ -84,15 +83,16 @@ delimiter ;
 
 
 create table totalPurchasePerPackAndValidityPeriod(
-                                                      package_id int not null ,
-                                                      valPeriod_id int not null ,
-                                                      totalPurchases int not null DEFAULT 0,
-                                                      foreign key (package_id) references service_package(id),
-                                                      foreign key (valPeriod_id) references validityperiod(id)
+             id int not null primary key auto_increment,
+             package_id int not null ,
+             valPeriod_id int not null ,
+             totalPurchases int not null DEFAULT 0,
+             foreign key (package_id) references service_package(id),
+             foreign key (valPeriod_id) references validityperiod(id)
 );
 
 delimiter //
-create definer = current_user trigger createOrderAndAssociatedServicePackageAndValPeriod
+create definer = current_user trigger insertServicePackageAndValPeriod
     after insert on service_package_validity_periods for each row begin
     insert into totalPurchasePerPackAndValidityPeriod(package_id, valPeriod_id)
     values (NEW.servicePackage_id,NEW.validityPeriod_id);
@@ -108,7 +108,6 @@ create definer = current_user trigger addPurchaseToPackageAndValPeriod
                                             from `order` o
                                             where o.serviceId=NEW.serviceId);
     end if;
-
 end //
 delimiter ;
 
@@ -136,6 +135,14 @@ create table salesPackage
 );
 
 delimiter //
+create definer =current_user trigger createSales
+    after insert on `service_package` for each row begin
+    insert into salesPackage(package_id)
+    values (NEW.id);
+end //
+delimiter ;
+
+delimiter //
 create definer = current_user trigger addSales
     after insert on `order` for each row begin
     declare x,y,z float;
@@ -144,7 +151,8 @@ create definer = current_user trigger addSales
         from `order` o
         where o.serviceId=NEW.serviceId;
         update salesPackage s
-        set s.totalSalesWithProduct=s.totalSalesWithProduct+x+y, s.totalSalesWithoutProduct=s.totalSalesWithoutProduct+x
+        set s.totalSalesWithProduct=s.totalSalesWithProduct+x+y,
+            s.totalSalesWithoutProduct=s.totalSalesWithoutProduct+x
         where s.package_id in (select o.serviceId
                                from `order` o
                                where o.serviceId=NEW.serviceId);
@@ -162,7 +170,8 @@ begin
         from `order` o
         where o.serviceId=NEW.serviceId;
         update salesPackage s
-        set s.totalSalesWithProduct=s.totalSalesWithProduct+x+y, s.totalSalesWithoutProduct=s.totalSalesWithoutProduct+x
+        set s.totalSalesWithProduct=s.totalSalesWithProduct+x+y,
+            s.totalSalesWithoutProduct=s.totalSalesWithoutProduct+x
         where s.package_id in (select o.serviceId
                                from `order` o
                                where o.serviceId=NEW.serviceId);
@@ -170,13 +179,6 @@ begin
 end //
 delimiter ;
 
-delimiter //
-create definer =current_user trigger createSales
-    after insert on `service_package` for each row begin
-    insert into salesPackage(package_id)
-    values (NEW.id);
-end //
-delimiter ;
 
 
 create table avgnumofproductsperpackage
@@ -220,7 +222,8 @@ delimiter ;
 delimiter //
 create definer =current_user trigger updateOptProduct
     after update on product for each row begin
-    if NEW.orderId is not null and NEW.orderId in (select o.id from `order` o where o.confirmed= true) then
+    if NEW.orderId is not null and
+       NEW.orderId in (select o.id from `order` o where o.confirmed= true) then
         delete from optionalProductsPerOrder where order_id=NEW.orderId;
         insert into optionalProductsPerOrder(order_id, total)
             ( select p.orderId, COUNT(p.id)
@@ -237,7 +240,8 @@ create definer =current_user trigger updateOptProduct
         where package_id in (select o.serviceId from `order` o where o.id=NEW.orderId);
         insert into avgnumofproductsperpackage(package_id, avg)
         select t.package_id, (o.total/t.totalPurchases)
-        from totalpurchaseperpackage t left outer join totalnumberofoptionalproduct o on t.package_id=o.package_id
+        from totalpurchaseperpackage t left outer join totalnumberofoptionalproduct o
+                                        on t.package_id=o.package_id
         where t.package_id in (select o.serviceId from `order` o where o.id=NEW.orderId);
     end if;
 end //
@@ -250,6 +254,18 @@ create table alertsForReport
     foreign key (alert_id) references alert(id)
 );
 
+create table insolventuser
+(
+    user_id int not null ,
+    foreign key (user_id) references user(id)
+);
+
+create table suspendedorders
+(
+    order_id int not null ,
+    foreign key (order_id) references `order`(id)
+);
+
 delimiter //
 create definer = current_user trigger addAlert
     after insert on alert for each row begin
@@ -257,13 +273,6 @@ create definer = current_user trigger addAlert
     values (NEW.id);
 end//
 delimiter ;
-
-
-create table insolventuser
-(
-    user_id int not null ,
-    foreign key (user_id) references user(id)
-);
 
 delimiter //
 create definer = current_user trigger updateInsolventUser
@@ -279,12 +288,6 @@ create definer = current_user trigger updateInsolventUser
     end if;
 end //
 delimiter ;
-
-create table suspendedorders
-(
-    order_id int not null ,
-    foreign key (order_id) references `order`(id)
-);
 
 delimiter //
 create definer = current_user trigger addSuspendedOrder
@@ -340,7 +343,6 @@ begin
 end //
 delimiter ;
 
-
 delimiter //
 create definer =current_user trigger addSalesForEachProduct
     after update on product for each row begin
@@ -351,30 +353,9 @@ create definer =current_user trigger addSalesForEachProduct
         from product p join `order` o on p.orderId = o.id
                        join validityperiod v on o.validityId = v.id
         where o.id=NEW.orderId and p.id=NEW.id;
-#         group by p.id;
         update salesForEachOptproduct s
         set s.sales=s.sales+(y*z)
         where s.optionalProduct_id = id and id = NEW.id;
     end if;
 end //
 delimiter ;
-
-/*delimiter //
-create definer =current_user trigger updateSalesForEachProduct
-    after update on `order` for each row begin
-    declare y float;
-    declare z,id int;
-    if NEW.confirmed=true then
-        select p.id,p.monthly_fee,v.numOfMonths into id,y,z
-        from product p left outer join `order` o on p.orderId = o.id
-                       left outer join validityperiod v on o.validityId = v.id
-        where o.id=NEW.id;
-#         group by p.id;
-        update salesForEachOptproduct s
-        set s.sales=s.sales+(y*z)
-        where s.optionalProduct_id = id and id in
-                                            (select p.id from product p
-                                             where p.orderId=NEW.id);
-    end if;
-end //
-delimiter ;*/

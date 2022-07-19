@@ -9,7 +9,6 @@ import java.io.Serializable;
 @Table(name="alertsForReport", schema="telco")
 public class AlertReport implements Serializable {
     private static final long serialVersionUID = 1L;
-
     @Id
     private int alert_id;
     @OneToOne

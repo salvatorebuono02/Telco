@@ -129,12 +129,12 @@ public class ConfirmationPage extends HttpServlet {
             }
             order= orderBean.CreateNewOrder(buyableProducts,dc,s,end,sp,validityPeriod,totalValue,optionalValue,packageValue,user,confirmed);
             System.out.println("user failed payments: "+ userBean.getFails(user.getId()));
-            if (userBean.getFails(user.getId()) == 3){
+            if (userBean.getFails(user.getId()) == 3 && !userBean.userAlertPresent(user)){
                 System.out.println("need to create alert");
                 userBean.createAlert(user, order);
                 System.out.println("user alert created");
             }
-            else if (userBean.getFails(user.getId()) > 3) {
+            else if (userBean.getFails(user.getId()) > 3 || userBean.userAlertPresent(user)) {
                 userBean.updateAlert(userBean.findAlertByUser(user), order);
 
             }
@@ -145,7 +145,7 @@ public class ConfirmationPage extends HttpServlet {
             path = "ConfirmationPage.html";
             templateEngine.process(path, webContext, resp.getWriter());
         } else {
-            order= orderBean.CreateNewOrder(buyableProducts,dc,s,end,sp,validityPeriod,totalValue,optionalValue,packageValue,null,null);
+            order= orderBean.CreateNewOrder(buyableProducts,dc,s,end,sp,validityPeriod,totalValue,optionalValue,packageValue,null);
             req.getSession().setAttribute("orderId", order.getId());
             path = "index.html";
             templateEngine.process(path, webContext, resp.getWriter());
@@ -168,7 +168,14 @@ public class ConfirmationPage extends HttpServlet {
     private void orderAlreadyExisting(HttpServletRequest req, HttpServletResponse resp, User user,
                                       WebContext webContext) throws IOException {
         String path;
-        int orderId = Integer.parseInt((String) req.getSession().getAttribute("orderId"));
+        int orderId;
+        /*if(req.getSession().getAttribute("user")==null)
+            orderId = (int) req.getSession().getAttribute("orderId");
+        else*/
+        if(req.getSession().getAttribute("orderId") instanceof Integer)
+            orderId = (int) req.getSession().getAttribute("orderId");
+        else
+            orderId = Integer.parseInt((String) req.getSession().getAttribute("orderId"));
         Optional<Order> order = orderBean.getOrderFromId(orderId);
         if (order.isPresent()) {
             //User user = userBean.findById(userId);
@@ -176,7 +183,6 @@ public class ConfirmationPage extends HttpServlet {
             //check se ordine in sessione è nuova prova di pagamento dell'utente
             List<Product> orderProducts= orderBean.findProductsFromOrder(order.get());
             //if(optionalProducts.){ if per caso in cui tutti prodotti comprati di quel pacchetto e nessuno dispoibile
-
             boolean orderRetry =
                     (packageAlreadyOwnedByUser(user, order.get(), orderBean) && !order.get().isConfirmed());
             if (!packageAlreadyOwnedByUser(user, order.get(), orderBean) || orderRetry) {

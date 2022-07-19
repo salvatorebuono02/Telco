@@ -10,29 +10,29 @@
 <body>
 
 <h1>HOMEPAGE</h1>
-<h4 th:text="${employee.username}">Name </h4>
+<h2 th:text="${employee.username}">Name </h2>
 <h2>DESIGN YOUR PACKAGE</h2>
 
 <form action="#" th:action="@{/CreateServicePackage(servicestypes=${servicestypes})}" method="post">
     Name: <input type="text" name="name" required> <br>
     <fieldset>
-        <legend>Choose one or more services</legend>
-        <fieldset th:each="stype:${servicestypes}">
-            <legend th:text="${stype}" th:value="${stype}"></legend>
+        <legend><h3>Choose one or more services</h3></legend><br>
+        <fieldset th:each="stype:${servicestypes}"><br>
+            <legend th:text="' '+${stype}" th:value="${stype}"></legend>
 <!--
             <input type="checkbox" name="services" th:each="s:${services}" th:value="${s.id}" th:text="${s.getTypeofService()}">
 -->
-            <input type="checkbox" name="servicesId" th:each="s:${services}" th:if="${s.getServiceType()==stype}" th:text="${s.getServiceType()}+':'+${s.toString()}" th:value="${s.id}">
+            <input type="checkbox" name="servicesId" th:each="s:${services}" th:if="${s.getServiceType()==stype}" th:text="' '+${s.getServiceType()}+':'+${s.toString()}" th:value="${s.id}">
         </fieldset>
-    </fieldset>
+    </fieldset><br>
     <fieldset>
-        <legend>Choose one or more products</legend>
-        <input type="checkbox" name="products" th:each="p:${products}"  th:value="${p.id}" th:text="${p.name}">
-    </fieldset>
+        <legend><h3>Choose one or more products</h3></legend><br>
+        <input type="checkbox" name="products" th:each="p:${products}"  th:value="${p.id}" th:text="' '+${p.name}">
+    </fieldset><br>
     <fieldset>
-        <legend>Choose one or more validityPeriod</legend>
-        <input type="checkbox" name="validityPeriods" th:each="vp:${validityPeriods}" th:value="${vp.id}" th:text="${vp.toString()}">
-    </fieldset>
+        <legend><h3>Choose one or more validityPeriods</h3></legend><br>
+        <input type="checkbox" name="validityPeriods" th:each="vp:${validityPeriods}" th:value="${vp.id}" th:text="' '+${vp.toString()}">
+    </fieldset><br>
     <p style="text-align: center;float: bottom" th:text="${confirmMsg}"></p>
     <input type="submit" value="Create service package">
 </form>

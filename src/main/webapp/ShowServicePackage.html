@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<td th:text="${user!=null} ? ${user.username}: 'You are not logged in'" />
+<h2 th:text="${user!=null} ? ${user.username}: 'You are not logged in'" />
 
 <p th:text="${servicePackage.name}"></p>
     <form class="buy" action="ConfirmationPage" method="post" >

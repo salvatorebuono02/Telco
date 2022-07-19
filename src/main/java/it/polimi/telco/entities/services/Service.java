@@ -20,7 +20,8 @@ public abstract class Service implements Serializable {
     private int id;
 
     @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    @JoinTable(name = "service_servicePkg",joinColumns = {@JoinColumn(name = "service_id")},inverseJoinColumns = {@JoinColumn(name = "package_id")})
+    @JoinTable(name = "service_servicePkg",joinColumns = {@JoinColumn(name = "service_id")},
+            inverseJoinColumns = {@JoinColumn(name = "package_id")})
     private List<ServicePackage> servicePackages;
 
     @Column(name = "serviceType",length = 45)

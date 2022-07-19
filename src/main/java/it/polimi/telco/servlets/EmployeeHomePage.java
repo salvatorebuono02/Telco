@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/EmployeeHomePage")
@@ -44,6 +45,7 @@ public class EmployeeHomePage extends HttpServlet {
         Employee employee = null;
         List<Service> services = employeeBean.findAllServices();
         List<Product> products = employeeBean.findAllProducts();
+        List<Product> onePerType= findOnePerType(products);
         List<ValidityPeriod> validityPeriods=employeeBean.findAllValidityPeriods();
 
         employee = (Employee) req.getSession().getAttribute("employee");
@@ -56,7 +58,7 @@ public class EmployeeHomePage extends HttpServlet {
             System.out.println("employee ok");
             webContext.setVariable("services", services);
             System.out.println("services ok");
-            webContext.setVariable("products", products);
+            webContext.setVariable("products", onePerType);
             System.out.println("product ok");
             webContext.setVariable("validityPeriods",validityPeriods);
             System.out.println("validityPeriods ok");
@@ -64,6 +66,27 @@ public class EmployeeHomePage extends HttpServlet {
 
         String path = "EmployeeHomePage.html";
         templateEngine.process(path, webContext, resp.getWriter());
+    }
+
+    private List<Product> findOnePerType(List<Product> products) {
+        List<Product> types= new ArrayList<>();
+        int flag;
+        for(Product p: products) {
+            flag=0;
+            if (types.isEmpty())
+                types.add(p);
+            else {
+                for (Product p1 : types) {
+                    if (p1.getName().equals(p.getName())) {
+                        flag = 1;
+                        break;
+                    }
+                }
+                if (flag == 0)
+                    types.add(p);
+            }
+        }
+        return types;
     }
 /*
     @Override
