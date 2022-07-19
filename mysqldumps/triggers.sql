@@ -42,7 +42,8 @@ drop trigger if exists createSalesForEachProduct;
 
 create table totalpurchaseperpackage
 (
-    package_id int not null primary key ,
+    id int not null primary key auto_increment,
+    package_id int not null,
     totalPurchases int default 0 not null ,
     foreign key (package_id) references service_package(id)
 );
@@ -63,7 +64,7 @@ begin
         update totalpurchaseperpackage set totalPurchases=totalPurchases+1
         where package_id in (select o.serviceId
                              from `order` o
-                             where o.serviceId=NEW.serviceId);
+                             where o.id=NEW.id);
     end if;
 end //
 delimiter ;
@@ -76,7 +77,7 @@ create definer = current_user trigger updatePurchaseToPackage
         update totalpurchaseperpackage set totalPurchases=totalPurchases+1
         where package_id in (select o.serviceId
                              from `order` o
-                             where o.serviceId=NEW.serviceId);
+                             where o.id=NEW.id);
     end if;
 end //
 delimiter ;
@@ -106,7 +107,7 @@ create definer = current_user trigger addPurchaseToPackageAndValPeriod
         update totalPurchasePerPackAndValidityPeriod set totalPurchases=totalPurchases+1
         where (package_id,valPeriod_id) in (select o.serviceId,o.validityId
                                             from `order` o
-                                            where o.serviceId=NEW.serviceId);
+                                            where o.id=NEW.id);
     end if;
 end //
 delimiter ;
@@ -118,7 +119,7 @@ create definer =current_user trigger updatePurchaseToPackageAndValPeriod
         update totalPurchasePerPackAndValidityPeriod set totalPurchases=totalPurchases+1
         where (package_id,valPeriod_id) in (select o.serviceId,o.validityId
                                             from `order` o
-                                            where o.serviceId=NEW.serviceId);
+                                            where o.id=NEW.id);
     end if;
 end //
 delimiter ;
@@ -127,7 +128,8 @@ delimiter ;
 
 create table salesPackage
 (
-    package_id int not null primary key ,
+    id int not null primary key auto_increment,
+    package_id int not null ,
     totalSalesWithProduct int not null DEFAULT 0,
     totalSalesWithoutProduct int not null default 0,
     foreign key (package_id) references service_package(id)
@@ -149,13 +151,13 @@ create definer = current_user trigger addSales
     if NEW.confirmed=true then
         select o.totalvalueservices,o.totalvalueproducts into x,y
         from `order` o
-        where o.serviceId=NEW.serviceId;
+        where o.id=NEW.id;
         update salesPackage s
         set s.totalSalesWithProduct=s.totalSalesWithProduct+x+y,
             s.totalSalesWithoutProduct=s.totalSalesWithoutProduct+x
         where s.package_id in (select o.serviceId
                                from `order` o
-                               where o.serviceId=NEW.serviceId);
+                               where o.serviceId=NEW.serviceId and o.id=NEW.id);
     end if;
 end //
 delimiter ;
@@ -168,13 +170,13 @@ begin
     if NEW.confirmed=true then
         select o.totalvalueservices,o.totalvalueproducts into x,y
         from `order` o
-        where o.serviceId=NEW.serviceId;
+        where o.id=NEW.id;
         update salesPackage s
         set s.totalSalesWithProduct=s.totalSalesWithProduct+x+y,
             s.totalSalesWithoutProduct=s.totalSalesWithoutProduct+x
         where s.package_id in (select o.serviceId
                                from `order` o
-                               where o.serviceId=NEW.serviceId);
+                               where o.serviceId=NEW.serviceId and o.id=NEW.id);
     end if;
 end //
 delimiter ;
@@ -183,14 +185,16 @@ delimiter ;
 
 create table avgnumofproductsperpackage
 (
-    package_id int not null primary key ,
+    id int not null primary key auto_increment,
+    package_id int not null ,
     avg float default -1 not null ,
     foreign key (package_id) references service_package(id)
 );
 
 create table totalnumberofoptionalproduct
 (
-    package_id int not null primary key ,
+    id int not null primary key auto_increment,
+    package_id int not null ,
     total int default 0,
     foreign key (package_id) references service_package(id)
 );
